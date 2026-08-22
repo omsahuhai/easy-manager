@@ -105,7 +105,8 @@ npx supabase db push
   - Implemented `profiles`, `businesses`, `fuel_rates`, `daily_meter_readings`, `expenses`.
   - Configured RLS policies, indexing, and calculation views with `security_invoker`.
   - Audited database security with Supabase DB advisors.
-- [ ] **Phase 2: Combined Owner Dashboard & Business Selection**
-- [ ] **Phase 3: Daily Reading & Fuel Rate Management UI**
-- [ ] **Phase 4: Monthly Expense Tracking & RO Profit Reports**
+- [x] **Phase 2: Owner Dashboard & Business Selection**
+- [x] **Phase 3: Project Branding & UI/UX Polish**
+- [ ] **Phase 4: Daily Reading & Fuel Rate Management UI**
+- [ ] **Phase 5: Monthly Expense Tracking & RO Profit Reports**
 

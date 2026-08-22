@@ -7,6 +7,8 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { IndianRupee, Droplet, TrendingUp, ReceiptText, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+export const instant = false;
+
 export default async function BusinessDashboard(props: {
   params: Promise<{ businessId: string }>;
 }) {
@@ -59,12 +61,12 @@ export default async function BusinessDashboard(props: {
       {/* Quick Actions */}
       <QuickActions businessId={currentBusiness.id} />
 
-      {/* Today's Performance (Placeholders for Phase 2) */}
+      {/* Today&apos;s Performance (Placeholders for Phase 2) */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Today's Performance</h2>
+        <h2 className="text-xl font-semibold mb-4">Today&apos;s Performance</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
-            title="Today's Sales"
+            title="Today&apos;s Sales"
             value="₹0.00"
             icon={<IndianRupee />}
             description="Total sales amount"
@@ -85,7 +87,7 @@ export default async function BusinessDashboard(props: {
             title="Expenses"
             value="₹0.00"
             icon={<ReceiptText className="text-red-500" />}
-            description="Today's logged expenses"
+            description="Today&apos;s logged expenses"
           />
         </div>
       </div>
@@ -132,7 +134,7 @@ export default async function BusinessDashboard(props: {
           </CardHeader>
           <CardContent>
             <div className="text-center text-muted-foreground py-8">
-              No recent activity found.
+              Today&apos;s sales and activities will appear after meter readings are added.
             </div>
           </CardContent>
         </Card>

@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Store, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+export const instant = false;
+
 export default async function DashboardRoot() {
   await connection();
   const supabase = await createClient();
@@ -30,9 +32,9 @@ export default async function DashboardRoot() {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center min-h-[50vh]">
         <Store className="h-12 w-12 text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-semibold mb-2">No Businesses Found</h2>
-        <p className="text-muted-foreground mb-6">You don't have any businesses set up yet.</p>
-        <Button>Create a Business</Button>
+        <h2 className="text-2xl font-semibold mb-2">No petrol pump added yet</h2>
+        <p className="text-muted-foreground mb-6">Add your first business to start tracking operations, sales, and expenses.</p>
+        <Button>Add Your First Business</Button>
       </div>
     );
   }
