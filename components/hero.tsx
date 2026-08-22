@@ -1,44 +1,28 @@
-import { NextLogo } from "./next-logo";
-import { SupabaseLogo } from "./supabase-logo";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 export function Hero() {
   return (
-    <div className="flex flex-col gap-16 items-center">
-      <div className="flex gap-8 justify-center items-center">
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SupabaseLogo />
-        </a>
-        <span className="border-l rotate-45 h-6" />
-        <a href="https://nextjs.org/" target="_blank" rel="noreferrer">
-          <NextLogo />
-        </a>
+    <div className="flex flex-col gap-8 items-center pt-16 pb-8">
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-center">
+          Manage your petrol pump <span className="text-primary">with ease.</span>
+        </h1>
+        <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl text-center">
+          The all-in-one mobile-first accounting solution for petrol pump owners. Track sales, expenses, and analytics securely.
+        </p>
       </div>
-      <h1 className="sr-only">Supabase and Next.js Starter Template</h1>
-      <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
-        The fastest way to build apps with{" "}
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Supabase
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://nextjs.org/"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Next.js
-        </a>
-      </p>
-      <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
+      
+      <div className="flex gap-4 mt-4">
+        <Button asChild size="lg" className="px-8">
+          <Link href="/auth/sign-up">Get Started</Link>
+        </Button>
+        <Button asChild size="lg" variant="outline" className="px-8">
+          <Link href="/auth/login">Login</Link>
+        </Button>
+      </div>
+
+      <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-16" />
     </div>
   );
 }

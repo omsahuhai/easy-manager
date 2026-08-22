@@ -1,11 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Store, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default async function DashboardRoot() {
+  await connection();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

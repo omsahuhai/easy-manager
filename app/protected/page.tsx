@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ProtectedPage() {
+  await connection();
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
 

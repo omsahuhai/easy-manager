@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { BusinessSwitcher } from "@/components/dashboard/business-switcher";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { QuickActions } from "@/components/dashboard/quick-actions";
@@ -9,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default async function BusinessDashboard(props: {
   params: Promise<{ businessId: string }>;
 }) {
+  await connection();
   const params = await props.params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

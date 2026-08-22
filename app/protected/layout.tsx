@@ -28,21 +28,15 @@ export default function ProtectedLayout({
             )}
           </div>
         </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          {children}
+        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
+          <Suspense fallback={<div className="flex justify-center py-12 text-muted-foreground text-sm">Loading dashboard...</div>}>
+            {children}
+          </Suspense>
         </div>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
+        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
+          <p className="text-muted-foreground">
+            &copy; 2026 Easy Manager. All rights reserved.
           </p>
           <ThemeSwitcher />
         </footer>
