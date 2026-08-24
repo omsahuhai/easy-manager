@@ -51,6 +51,7 @@ export interface ReadingWithContinuity extends DailySalesRecord {
   previous_reading_date: string | null;
   has_opening_mismatch: boolean;
   expected_opening: number | null;
+  is_first_reading: boolean;
 }
 
 export interface Expense {

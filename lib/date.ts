@@ -56,6 +56,15 @@ export function toMonthStartIST(year: number, month: number): string {
 }
 
 /**
+ * Returns current month in Asia/Kolkata formatted as canonical "YYYY-MM-01".
+ */
+export function getCurrentMonthIST(): string {
+  const today = getTodayIST();
+  const [year, month] = today.split("-");
+  return `${year}-${month}-01`;
+}
+
+/**
  * Formats a YYYY-MM-01 string to a readable month string (e.g. "August 2026").
  */
 export function formatMonthIST(monthDateStr: string): string {
@@ -66,6 +75,32 @@ export function formatMonthIST(monthDateStr: string): string {
     month: "long",
     year: "numeric",
   });
+}
+
+/**
+ * Generates an array of available months for selectors (past 12 months + current month).
+ */
+export function getAvailableExpenseMonthsIST(
+  pastCount = 12,
+  futureCount = 1
+): Array<{ value: string; label: string }> {
+  const today = getTodayIST();
+  const [currentYear, currentMonth] = today.split("-").map(Number);
+
+  const months: Array<{ value: string; label: string }> = [];
+
+  for (let i = futureCount; i >= -pastCount; i--) {
+    const d = new Date(currentYear, currentMonth - 1 + i, 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const val = `${y}-${m}-01`;
+    months.push({
+      value: val,
+      label: d.toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
+    });
+  }
+
+  return months;
 }
 
 /**
