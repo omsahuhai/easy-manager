@@ -1,7 +1,6 @@
+import { getBusinessById } from "@/lib/queries/businesses";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import { connection } from "next/server";
-import { BusinessSwitcher } from "@/components/dashboard/business-switcher";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { IndianRupee, Droplet, TrendingUp, ReceiptText, Activity } from "lucide-react";
@@ -12,58 +11,28 @@ export const instant = false;
 export default async function BusinessDashboard(props: {
   params: Promise<{ businessId: string }>;
 }) {
-  await connection();
   const params = await props.params;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/auth/login");
   }
 
-  // Fetch all businesses for the switcher
-  const { data: businesses, error } = await supabase
-    .from("businesses")
-    .select("id, name, type")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: true });
-
-  if (error || !businesses) {
-    return <div>Error loading businesses</div>;
-  }
-
-  const currentBusiness = businesses.find((b) => b.id === params.businessId);
+  const currentBusiness = await getBusinessById(params.businessId);
 
   if (!currentBusiness) {
-    // If the business doesn't exist or user doesn't own it, redirect back to dashboard
-    redirect("/protected/dashboard");
+    notFound();
   }
-
-  // Formatting helpers
-  const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
   return (
     <div className="w-full space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{currentBusiness.name}</h1>
-          <p className="text-muted-foreground">{today}</p>
-        </div>
-        {businesses.length > 1 && (
-          <BusinessSwitcher businesses={businesses} currentBusinessId={currentBusiness.id} />
-        )}
-      </div>
-
       {/* Quick Actions */}
       <QuickActions businessId={currentBusiness.id} />
 
-      {/* Today&apos;s Performance (Placeholders for Phase 4) */}
+      {/* Today's Performance (To be integrated in Phase 4.5) */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Today&apos;s Performance</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

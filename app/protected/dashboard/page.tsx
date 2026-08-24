@@ -1,75 +1,82 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { connection } from "next/server";
 import Link from "next/link";
+import { getBusinessesForUser } from "@/lib/queries/businesses";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Store, ArrowRight } from "lucide-react";
+import { Store, ArrowRight, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const instant = false;
 
 export default async function DashboardRoot() {
-  await connection();
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/auth/login");
   }
 
-  // Fetch businesses for the user
-  const { data: businesses, error } = await supabase
-    .from("businesses")
-    .select("id, name, type")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: true });
+  // Fetch businesses using domain query layer
+  const businesses = await getBusinessesForUser();
 
-  if (error) {
-    return <div>Error loading businesses: {error.message}</div>;
-  }
-
-  if (!businesses || businesses.length === 0) {
+  if (businesses.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center min-h-[50vh]">
-        <Store className="h-12 w-12 text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-semibold mb-2">No petrol pump added yet</h2>
-        <p className="text-muted-foreground mb-6">Add your first business to start tracking operations, sales, and expenses.</p>
-        <Button disabled className="opacity-50 cursor-not-allowed">
-          Add Your First Business
-          <span className="ml-2 text-xs">(Coming Soon)</span>
+      <div className="flex flex-col items-center justify-center p-8 text-center min-h-[50vh] max-w-md mx-auto">
+        <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
+          <Store className="h-10 w-10" />
+        </div>
+        <h2 className="text-2xl font-bold tracking-tight mb-2">No petrol pump added yet</h2>
+        <p className="text-muted-foreground mb-6">
+          Set up your first retail outlet to start recording meter readings, fuel rates, and monthly expenses.
+        </p>
+        <Button asChild size="lg" className="w-full sm:w-auto">
+          <Link href="/protected/dashboard/create" className="flex items-center gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Add Your First Business
+          </Link>
         </Button>
-        <p className="text-xs text-muted-foreground mt-3">Business management will be available in the next update.</p>
       </div>
     );
   }
 
-  // If exactly one business, redirect directly to its dashboard
+  // If exactly one business, direct directly to its dashboard
   if (businesses.length === 1) {
     redirect(`/protected/dashboard/${businesses[0].id}`);
   }
 
-  // If multiple businesses, show the overview/switcher
+  // If multiple businesses, show overview switcher and option to add another
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Your Businesses</h1>
-        <p className="text-muted-foreground">Select a business to view its dashboard.</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Your Businesses</h1>
+          <p className="text-muted-foreground">Select a business to view its register and dashboard.</p>
+        </div>
+        <Button asChild variant="outline">
+          <Link href="/protected/dashboard/create" className="flex items-center gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Add Another Business
+          </Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {businesses.map((business) => (
-          <Link href={`/protected/dashboard/${business.id}`} key={business.id}>
-            <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full flex flex-col">
+          <Link href={`/protected/dashboard/${business.id}`} key={business.id} className="block group">
+            <Card className="hover:border-primary/50 transition-all hover:shadow-md cursor-pointer h-full flex flex-col">
               <CardHeader>
-                <CardTitle>{business.name}</CardTitle>
-                <CardDescription className="capitalize">{business.type.replace('_', ' ')}</CardDescription>
+                <div className="flex items-center gap-2">
+                  <Store className="h-5 w-5 text-primary" />
+                  <CardTitle className="group-hover:text-primary transition-colors">{business.name}</CardTitle>
+                </div>
+                <CardDescription className="capitalize">{business.type.replace("_", " ")}</CardDescription>
               </CardHeader>
-              <CardContent className="mt-auto">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium">
-                    View dashboard
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              <CardContent className="mt-auto pt-4 border-t">
+                <div className="flex items-center justify-between text-sm font-medium text-muted-foreground group-hover:text-foreground">
+                  <span>Open workspace</span>
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </CardContent>
             </Card>
