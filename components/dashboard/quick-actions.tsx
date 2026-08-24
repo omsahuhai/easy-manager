@@ -19,9 +19,10 @@ export function QuickActions({ businessId }: { businessId: string }) {
       comingSoon: false,
     },
     {
-      icon: <Banknote className="h-5 w-5" />,
+      icon: <Banknote className="h-5 w-5 text-primary" />,
       label: "Add Expense",
-      comingSoon: true,
+      href: `${baseUrl}/expenses`,
+      comingSoon: false,
     },
     {
       icon: <FileText className="h-5 w-5" />,

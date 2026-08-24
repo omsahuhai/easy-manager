@@ -54,6 +54,16 @@ export interface ReadingWithContinuity extends DailySalesRecord {
   is_first_reading: boolean;
 }
 
+export const EXPENSE_CATEGORIES = [
+  "Electricity",
+  "Salaries",
+  "Generator",
+  "Maintenance",
+  "Miscellaneous",
+] as const;
+
+export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
+
 export interface Expense {
   id: string;
   business_id: string;
