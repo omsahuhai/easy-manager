@@ -19,7 +19,7 @@ export default function ProtectedLayout({
             </Suspense>
           </div>
         </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
+        <div className="flex-1 flex flex-col gap-4 max-w-5xl p-5 w-full">
           <Suspense fallback={<div className="flex justify-center py-12 text-muted-foreground text-sm">Loading dashboard...</div>}>
             {children}
           </Suspense>

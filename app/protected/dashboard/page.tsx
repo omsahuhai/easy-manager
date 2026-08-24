@@ -34,7 +34,11 @@ export default async function DashboardRoot() {
         <Store className="h-12 w-12 text-muted-foreground mb-4" />
         <h2 className="text-2xl font-semibold mb-2">No petrol pump added yet</h2>
         <p className="text-muted-foreground mb-6">Add your first business to start tracking operations, sales, and expenses.</p>
-        <Button>Add Your First Business</Button>
+        <Button disabled className="opacity-50 cursor-not-allowed">
+          Add Your First Business
+          <span className="ml-2 text-xs">(Coming Soon)</span>
+        </Button>
+        <p className="text-xs text-muted-foreground mt-3">Business management will be available in the next update.</p>
       </div>
     );
   }

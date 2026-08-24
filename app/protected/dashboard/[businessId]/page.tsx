@@ -55,38 +55,40 @@ export default async function BusinessDashboard(props: {
           <h1 className="text-3xl font-bold tracking-tight">{currentBusiness.name}</h1>
           <p className="text-muted-foreground">{today}</p>
         </div>
-        <BusinessSwitcher businesses={businesses} currentBusinessId={currentBusiness.id} />
+        {businesses.length > 1 && (
+          <BusinessSwitcher businesses={businesses} currentBusinessId={currentBusiness.id} />
+        )}
       </div>
 
       {/* Quick Actions */}
       <QuickActions businessId={currentBusiness.id} />
 
-      {/* Today&apos;s Performance (Placeholders for Phase 2) */}
+      {/* Today&apos;s Performance (Placeholders for Phase 4) */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Today&apos;s Performance</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
             title="Today&apos;s Sales"
             value="₹0.00"
-            icon={<IndianRupee />}
+            icon={<IndianRupee className="h-4 w-4" />}
             description="Total sales amount"
           />
           <StatCard
             title="Fuel Sold"
             value="0 L"
-            icon={<Droplet />}
+            icon={<Droplet className="h-4 w-4" />}
             description="Total volume sold"
           />
           <StatCard
             title="RO Profit"
             value="₹0.00"
-            icon={<TrendingUp className="text-green-500" />}
+            icon={<TrendingUp className="h-4 w-4 text-green-500" />}
             description="Estimated RO profit"
           />
           <StatCard
             title="Expenses"
             value="₹0.00"
-            icon={<ReceiptText className="text-red-500" />}
+            icon={<ReceiptText className="h-4 w-4 text-red-500" />}
             description="Today&apos;s logged expenses"
           />
         </div>

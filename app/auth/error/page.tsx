@@ -1,4 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 
 async function ErrorContent({
@@ -7,19 +10,14 @@ async function ErrorContent({
   searchParams: Promise<{ error: string }>;
 }) {
   const params = await searchParams;
+  const message = params?.error;
 
   return (
-    <>
-      {params?.error ? (
-        <p className="text-sm text-muted-foreground">
-          Code error: {params.error}
-        </p>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          An unspecified error occurred.
-        </p>
-      )}
-    </>
+    <p className="text-sm text-muted-foreground text-center">
+      {message
+        ? `Details: ${message}`
+        : "An unknown authentication error occurred. This link may have expired or already been used."}
+    </p>
   );
 }
 
@@ -33,9 +31,10 @@ export default function Page({
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="items-center text-center">
+              <AlertCircle className="h-10 w-10 text-destructive mb-2" />
               <CardTitle className="text-2xl">
-                Sorry, something went wrong.
+                Something went wrong
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -43,6 +42,14 @@ export default function Page({
                 <ErrorContent searchParams={searchParams} />
               </Suspense>
             </CardContent>
+            <CardFooter className="flex flex-col gap-3">
+              <Button asChild className="w-full">
+                <Link href="/auth/login">Back to Login</Link>
+              </Button>
+              <Button asChild variant="ghost" className="w-full">
+                <Link href="/auth/forgot-password">Reset Password</Link>
+              </Button>
+            </CardFooter>
           </Card>
         </div>
       </div>
