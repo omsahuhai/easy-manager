@@ -52,7 +52,7 @@ Every business's operational data is strictly isolated using `business_id` so th
 ## 📁 Repository Structure
 
 ```text
-my-supabase-app/
+easy-manager/
 ├── app/                  # Next.js App Router pages and layouts
 │   ├── auth/             # Authentication callbacks & flows
 │   └── protected/        # Authenticated routes
