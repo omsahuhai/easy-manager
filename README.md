@@ -72,12 +72,19 @@ my-supabase-app/
 ## 🚀 Getting Started
 
 ### 1. Environment Setup
-Ensure `.env.local` is present with your Supabase credentials:
+Copy the example environment configuration file to `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Then fill in your Supabase project credentials in `.env.local`:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 ```
+*(You can also use `NEXT_PUBLIC_SUPABASE_ANON_KEY`)*
 
 ### 2. Install Dependencies
 ```bash
