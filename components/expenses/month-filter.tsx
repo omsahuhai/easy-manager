@@ -1,57 +1,129 @@
 "use client";
 
+import { useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { getAvailableExpenseMonthsIST } from "@/lib/date";
-import { Calendar } from "lucide-react";
+import { getCurrentMonthIST } from "@/lib/date";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface MonthFilterProps {
   currentMonth: string; // YYYY-MM-01
-  recordedMonths: string[];
+  recordedMonths?: string[];
 }
 
-export function MonthFilter({ currentMonth, recordedMonths }: MonthFilterProps) {
+export function MonthFilter({ currentMonth }: MonthFilterProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const standardMonths = getAvailableExpenseMonthsIST(12, 1);
+  // Derive "YYYY-MM" for input[type="month"]
+  const monthValue = currentMonth.slice(0, 7);
 
-  // Combine standard recent months with any additional historical recorded months
-  const allMonthsMap = new Map<string, string>();
-  standardMonths.forEach((m) => allMonthsMap.set(m.value, m.label));
+  const [yearStr, monthStr] = currentMonth.split("-");
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
 
-  recordedMonths.forEach((monthVal) => {
-    if (!allMonthsMap.has(monthVal)) {
-      const [y, m] = monthVal.split("-").map(Number);
-      const d = new Date(y, m - 1, 1);
-      const label = d.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-      allMonthsMap.set(monthVal, label);
+  const handlePrevMonth = () => {
+    const prevDate = new Date(year, month - 2, 1);
+    const prevY = prevDate.getFullYear();
+    const prevM = String(prevDate.getMonth() + 1).padStart(2, "0");
+    router.push(`${pathname}?month=${prevY}-${prevM}-01`);
+  };
+
+  const handleNextMonth = () => {
+    const nextDate = new Date(year, month, 1);
+    const nextY = nextDate.getFullYear();
+    const nextM = String(nextDate.getMonth() + 1).padStart(2, "0");
+    router.push(`${pathname}?month=${nextY}-${nextM}-01`);
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value; // "YYYY-MM"
+    if (val) {
+      router.push(`${pathname}?month=${val}-01`);
     }
-  });
+  };
 
-  const monthOptions = Array.from(allMonthsMap.entries())
-    .map(([value, label]) => ({ value, label }))
-    .sort((a, b) => b.value.localeCompare(a.value)); // newest first
+  const thisMonth = getCurrentMonthIST();
+  const isCurrentMonth = currentMonth === thisMonth;
 
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedMonth = e.target.value;
-    router.push(`${pathname}?month=${selectedMonth}`);
+  const handleResetThisMonth = () => {
+    router.push(`${pathname}?month=${thisMonth}`);
+  };
+
+  const openCalendar = () => {
+    if (inputRef.current) {
+      if ("showPicker" in HTMLInputElement.prototype) {
+        try {
+          inputRef.current.showPicker();
+        } catch {
+          inputRef.current.focus();
+        }
+      } else {
+        inputRef.current.focus();
+      }
+    }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative flex items-center">
-        <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <select
-          value={currentMonth}
-          onChange={handleMonthChange}
-          className="h-10 pl-9 pr-8 rounded-md border border-input bg-background py-2 text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer shadow-sm"
+    <div className="flex items-center gap-1.5 sm:gap-2">
+      {!isCurrentMonth && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleResetThisMonth}
+          className="text-xs h-9 px-2.5 hidden sm:inline-flex shadow-sm"
+          title="Return to current month"
         >
-          {monthOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          This Month
+        </Button>
+      )}
+
+      <div className="flex items-center rounded-md border border-input bg-background shadow-sm hover:border-foreground/30 transition-colors">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handlePrevMonth}
+          className="h-9 w-8 rounded-r-none border-r border-input text-muted-foreground hover:text-foreground"
+          title="Previous month"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={openCalendar}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openCalendar();
+            }
+          }}
+          className="relative flex items-center cursor-pointer px-2.5 py-1 gap-2 select-none"
+        >
+          <Calendar className="h-4 w-4 text-muted-foreground pointer-events-none shrink-0" />
+          <input
+            ref={inputRef}
+            type="month"
+            value={monthValue}
+            onChange={handleMonthChange}
+            className="h-7 bg-transparent text-sm font-medium focus-visible:outline-none cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
+          />
+        </div>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleNextMonth}
+          className="h-9 w-8 rounded-l-none border-l border-input text-muted-foreground hover:text-foreground"
+          title="Next month"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
