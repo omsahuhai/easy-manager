@@ -50,7 +50,7 @@ export default async function MonthlyReportsPage(props: {
   return (
     <div className="w-full space-y-6">
       <div>
-        <h2 className="text-xl font-bold tracking-tight">Monthly Profit Reports</h2>
+        <h2 className="text-xl font-bold tracking-tight">Total Reports</h2>
         <p className="text-sm text-muted-foreground">
           Historical overview of fuel sales, dealer commissions (RO profit), expenses, and net profit.
         </p>
@@ -104,9 +104,8 @@ export default async function MonthlyReportsPage(props: {
           </CardHeader>
           <CardContent>
             <div
-              className={`text-xl sm:text-2xl font-bold ${
-                totalNetProfitSum >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"
-              }`}
+              className={`text-xl sm:text-2xl font-bold ${totalNetProfitSum >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"
+                }`}
             >
               ₹{totalNetProfitSum.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
