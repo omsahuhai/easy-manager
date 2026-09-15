@@ -4,40 +4,25 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Logo } from "@/components/logo";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-
 import { hasEnvVars } from "@/lib/utils";
-import { AlertTriangle, Terminal } from "lucide-react";
-
-async function AuthRedirect() {
-  if (!hasEnvVars) {
-    return null;
-  }
-
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      redirect("/protected/dashboard");
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
-}
+import { AlertTriangle } from "lucide-react";
 
 export const instant = false;
 
-export default function Home() {
+export default async function Home() {
+  let user = null;
+  if (hasEnvVars) {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getClaims();
+      user = data?.claims ?? null;
+    } catch {
+      // ignore
+    }
+  }
+
   return (
     <main className="min-h-screen flex flex-col items-center">
-      <Suspense fallback={null}>
-        <AuthRedirect />
-      </Suspense>
       <div className="flex-1 w-full flex flex-col gap-12 items-center">
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
@@ -80,7 +65,7 @@ export default function Home() {
         )}
 
         <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
-          <Hero />
+          <Hero user={user} />
         </div>
 
         <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">

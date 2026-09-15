@@ -5,7 +5,13 @@ import { LogoutButton } from "./logout-button";
 
 import { hasEnvVars } from "@/lib/utils";
 
-export async function AuthButton() {
+import { LayoutDashboard, ArrowRight } from "lucide-react";
+
+interface AuthButtonProps {
+  showDashboardLink?: boolean;
+}
+
+export async function AuthButton({ showDashboardLink = true }: AuthButtonProps = {}) {
   if (!hasEnvVars) {
     return (
       <div className="flex gap-2">
@@ -25,8 +31,19 @@ export async function AuthButton() {
     const user = data?.claims;
 
     return user ? (
-      <div className="flex items-center gap-4">
-        Hey, {user.email?.split("@")[0]}!
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium text-muted-foreground hidden sm:inline">
+          Hey, {user.email?.split("@")[0]}!
+        </span>
+        {showDashboardLink && (
+          <Button asChild size="sm" variant="default" className="gap-1.5 shadow-sm">
+            <Link href="/protected/dashboard">
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              <span>Dashboard</span>
+              <ArrowRight className="h-3.5 w-3.5 hidden sm:inline" />
+            </Link>
+          </Button>
+        )}
         <LogoutButton />
       </div>
     ) : (

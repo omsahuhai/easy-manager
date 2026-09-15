@@ -15,7 +15,7 @@ export default function ProtectedLayout({
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
             <Logo />
             <Suspense>
-              <AuthButton />
+              <AuthButton showDashboardLink={false} />
             </Suspense>
           </div>
         </nav>
