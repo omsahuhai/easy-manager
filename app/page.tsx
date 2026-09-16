@@ -17,64 +17,53 @@ export default async function Home() {
       const { data } = await supabase.auth.getClaims();
       user = data?.claims ?? null;
     } catch {
-      // ignore
+      // Keep the public landing page available if auth is temporarily unavailable.
     }
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-12 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <Logo />
-            <Suspense>
-              <AuthButton />
-            </Suspense>
-          </div>
-        </nav>
+    <main className="min-h-screen bg-background">
+      <nav className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-6">
+          <Logo />
+          <Suspense>
+            <AuthButton />
+          </Suspense>
+        </div>
+      </nav>
 
-        {!hasEnvVars && (
-          <div className="w-full max-w-3xl px-5">
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-amber-900 dark:text-amber-200">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <h3 className="font-semibold text-sm">
-                    Supabase Configuration Required
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    To enable authentication and database operations, create a{" "}
-                    <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground font-semibold">
-                      .env.local
-                    </code>{" "}
-                    file in the root of your project:
-                  </p>
-                  <pre className="rounded-lg bg-background/80 p-3 font-mono text-xs border border-border overflow-x-auto text-foreground">
-                    <code>{`NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key`}</code>
-                  </pre>
-                  <p className="text-xs text-muted-foreground">
-                    You can copy the provided template:{" "}
-                    <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground font-semibold">
-                      cp .env.example .env.local
-                    </code>
-                  </p>
-                </div>
+      {!hasEnvVars && (
+        <div className="mx-auto w-full max-w-6xl px-5 pt-5 sm:px-6">
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-900 dark:text-amber-200">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">Supabase configuration required</h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Create <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground">.env.local</code> using the values documented in <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground">.env.example</code> to enable authentication and database operations.
+                </p>
               </div>
             </div>
           </div>
-        )}
-
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
-          <Hero user={user} />
         </div>
+      )}
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
-          <p className="text-muted-foreground">
-            &copy; 2026 Easy Manager. All rights reserved.
-          </p>
-          <ThemeSwitcher />
-        </footer>
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-6">
+        <Hero user={user} />
       </div>
+
+      <footer className="border-t">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div>
+            <p className="font-medium text-foreground">Easy Manager</p>
+            <p className="mt-1">The digital operating register for Indian petrol pump owners.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>© 2026 Easy Manager</span>
+            <ThemeSwitcher />
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
