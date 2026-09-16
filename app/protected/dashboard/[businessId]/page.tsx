@@ -41,7 +41,8 @@ export default async function BusinessDashboard(props: {
   const currentMonthIST = getCurrentMonthIST();
   const currentMonthLabel = formatMonthIST(currentMonthIST);
 
-  // Parallelize independent data fetches from authoritative views
+  // Fetch today's state plus the complete register so Overview can fall back
+  // to the latest recorded operational date without displaying false zeros.
   const [business, todayPerf, currentMonthProfit, recentReadings] = await Promise.all([
     getBusinessById(businessId),
     getTodayPerformance(businessId, todayIST),
@@ -57,24 +58,52 @@ export default async function BusinessDashboard(props: {
   const recentMismatches = recentReadings.filter((r) => r.has_opening_mismatch);
   const last7Readings = recentReadings.slice(0, 7);
 
-  const todaySalesDisplay =
-    todayPerf.totalSales !== null
-      ? `₹${todayPerf.totalSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : todayPerf.hasRateMissing
-      ? "Rate Missing"
-      : "₹0.00";
+  // The Overview should represent the latest recorded operational date.
+  // If today's readings exist, they naturally become the latest date.
+  // Otherwise, use the newest date present in the register.
+  const latestRecordedDate = recentReadings[0]?.reading_date ?? null;
+  const latestDateIsToday = latestRecordedDate === todayIST;
+  const latestPerformanceReadings = latestRecordedDate
+    ? recentReadings.filter((r) => r.reading_date === latestRecordedDate)
+    : [];
 
-  const todayProfitDisplay =
-    todayPerf.totalROProfit !== null
-      ? `₹${todayPerf.totalROProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : todayPerf.hasRateMissing
-      ? "—"
-      : "₹0.00";
+  const latestHasReadings = latestPerformanceReadings.length > 0;
+  const latestHasRateMissing = latestPerformanceReadings.some(
+    (r) => r.rate_missing || r.sales === null || r.profit === null
+  );
+  const latestTotalLitres = latestPerformanceReadings.reduce(
+    (sum, r) => sum + r.litres,
+    0
+  );
+  const latestTotalSales = latestHasRateMissing
+    ? null
+    : latestPerformanceReadings.reduce((sum, r) => sum + (r.sales ?? 0), 0);
+  const latestTotalROProfit = latestHasRateMissing
+    ? null
+    : latestPerformanceReadings.reduce((sum, r) => sum + (r.profit ?? 0), 0);
 
-  const monthExpensesDisplay =
-    currentMonthProfit !== null
-      ? `₹${currentMonthProfit.total_expenses.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : "₹0.00";
+  const latestMSReading = latestPerformanceReadings.find((r) => r.fuel_type === "MS") ?? null;
+  const latestHSDReading = latestPerformanceReadings.find((r) => r.fuel_type === "HSD") ?? null;
+
+  const performanceSalesDisplay = latestTotalSales !== null
+    ? `₹${latestTotalSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : latestHasRateMissing
+    ? "Rate Missing"
+    : "—";
+
+  const performanceProfitDisplay = latestTotalROProfit !== null
+    ? `₹${latestTotalROProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : latestHasRateMissing
+    ? "—"
+    : "—";
+
+  const monthExpensesDisplay = currentMonthProfit !== null
+    ? `₹${currentMonthProfit.total_expenses.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : "—";
+
+  const latestPerformanceLabel = latestRecordedDate
+    ? formatDateIST(latestRecordedDate)
+    : "No recorded date";
 
   return (
     <div className="w-full space-y-6">
@@ -118,62 +147,108 @@ export default async function BusinessDashboard(props: {
       {/* Operational Quick Actions */}
       <QuickActions businessId={business.id} />
 
-      {/* Today's Authoritative Performance Metrics */}
+      {/* Latest recorded operational performance */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight">Today&apos;s Performance</h2>
-          <span className="text-xs text-muted-foreground font-medium">
-            {todayPerf.hasReadings ? "Live View Calculation" : "No readings yet today"}
-          </span>
+        <div className="flex items-center justify-between mb-3 gap-4">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight">Latest Performance</h2>
+            {latestRecordedDate && (
+              <p className="text-xs text-muted-foreground font-medium mt-0.5">{latestPerformanceLabel}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-right">
+            {!latestDateIsToday && latestRecordedDate && (
+              <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/40 text-[10px] px-2 py-0.5">
+                Today not recorded
+              </Badge>
+            )}
+            <span className="text-xs text-muted-foreground font-medium hidden sm:inline">
+              {latestDateIsToday ? "Today's live calculation" : latestHasReadings ? "Latest recorded day" : "No readings recorded"}
+            </span>
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            title="Today&apos;s Sales"
-            value={todaySalesDisplay}
-            icon={<IndianRupee className="h-4 w-4" />}
-            description={
-              todayPerf.hasRateMissing
-                ? "Rate missing for today"
-                : todayPerf.hasReadings
-                ? "Total revenue from meter sales"
-                : "No readings recorded yet"
-            }
-          />
-          <StatCard
-            title="Fuel Sold"
-            value={`${todayPerf.totalLitres.toFixed(2)} L`}
-            icon={<Droplet className="h-4 w-4" />}
-            description="Total volume dispensed today"
-          />
-          <StatCard
-            title="RO Profit"
-            value={todayProfitDisplay}
-            icon={<TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-            description={
-              todayPerf.hasRateMissing
-                ? "Pending rate setup"
-                : "Estimated dealer margin earned"
-            }
-          />
-          <StatCard
-            title={`${currentMonthLabel} Expenses`}
-            value={monthExpensesDisplay}
-            icon={<ReceiptText className="h-4 w-4 text-red-500" />}
-            description="Logged monthly operational costs"
-          />
-        </div>
+
+        {!latestHasReadings ? (
+          <Card className="border-dashed shadow-sm">
+            <CardContent className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+              <div>
+                <p className="font-semibold text-sm">No meter readings have been recorded yet.</p>
+                <p className="text-xs text-muted-foreground mt-1">Start by entering today's meter readings.</p>
+              </div>
+              <Button asChild size="sm">
+                <Link href={`/protected/dashboard/${business.id}/readings`}>Add Today's Reading</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {!latestDateIsToday && (
+              <div className="mb-4 p-3.5 rounded-lg border border-amber-500/30 bg-amber-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-sm">Today's closing hasn't been recorded</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Enter today's meter readings to update this Overview with today's performance.</p>
+                  </div>
+                </div>
+                <Button asChild size="sm" variant="outline" className="whitespace-nowrap bg-background">
+                  <Link href={`/protected/dashboard/${business.id}/readings`}>Add Today's Reading</Link>
+                </Button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatCard
+                title="Sales"
+                value={performanceSalesDisplay}
+                icon={<IndianRupee className="h-4 w-4" />}
+                description={
+                  latestHasRateMissing
+                    ? "Rate missing for this recorded day"
+                    : latestDateIsToday
+                    ? "Total revenue from today's meter sales"
+                    : `Total revenue recorded on ${latestPerformanceLabel}`
+                }
+              />
+              <StatCard
+                title="Fuel Sold"
+                value={`${latestTotalLitres.toFixed(2)} L`}
+                icon={<Droplet className="h-4 w-4" />}
+                description={latestDateIsToday ? "Total volume dispensed today" : `Total volume dispensed on ${latestPerformanceLabel}`}
+              />
+              <StatCard
+                title="RO Profit"
+                value={performanceProfitDisplay}
+                icon={<TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+                description={
+                  latestHasRateMissing
+                    ? "Pending applicable fuel rate"
+                    : latestDateIsToday
+                    ? "Estimated dealer margin earned today"
+                    : `Estimated dealer margin on ${latestPerformanceLabel}`
+                }
+              />
+              <StatCard
+                title={`${currentMonthLabel} Expenses`}
+                value={monthExpensesDisplay}
+                icon={<ReceiptText className="h-4 w-4 text-red-500" />}
+                description="Logged monthly operational costs"
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Today's Fuel Breakdown */}
+        {/* Latest recorded fuel breakdown */}
         <Card className="lg:col-span-1 shadow-sm border">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-bold flex items-center justify-between">
-              <span>Today&apos;s Fuel Breakdown</span>
+              <span>{latestDateIsToday ? "Today's Fuel Breakdown" : "Latest Fuel Breakdown"}</span>
               <Droplet className="h-4 w-4 text-primary" />
             </CardTitle>
             <CardDescription className="text-xs">
-              Dispensed volume and sales by fuel type.
+              {latestRecordedDate ? `Dispensed volume and sales for ${latestPerformanceLabel}.` : "Dispensed volume and sales by fuel type."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -184,31 +259,25 @@ export default async function BusinessDashboard(props: {
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
                   <span className="font-semibold text-sm">MS (Petrol)</span>
                 </div>
-                {todayPerf.msReading ? (
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                    Recorded
-                  </Badge>
+                {latestMSReading ? (
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">Recorded</Badge>
                 ) : (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 text-muted-foreground">
-                    Not Entered
-                  </Badge>
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 text-muted-foreground">Not Entered</Badge>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs pt-1">
                 <div>
                   <span className="text-muted-foreground">Volume:</span>
-                  <div className="font-bold text-sm">
-                    {todayPerf.msReading ? `${todayPerf.msReading.litres.toFixed(2)} L` : "0.00 L"}
-                  </div>
+                  <div className="font-bold text-sm">{latestMSReading ? `${latestMSReading.litres.toFixed(2)} L` : "—"}</div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Sales:</span>
                   <div className="font-bold text-sm">
-                    {todayPerf.msReading?.sales !== null && todayPerf.msReading?.sales !== undefined
-                      ? `₹${todayPerf.msReading.sales.toFixed(2)}`
-                      : todayPerf.msReading?.rate_missing
+                    {latestMSReading?.sales !== null && latestMSReading?.sales !== undefined
+                      ? `₹${latestMSReading.sales.toFixed(2)}`
+                      : latestMSReading?.rate_missing
                       ? "Rate Missing"
-                      : "₹0.00"}
+                      : "—"}
                   </div>
                 </div>
               </div>
@@ -221,31 +290,25 @@ export default async function BusinessDashboard(props: {
                   <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
                   <span className="font-semibold text-sm">HSD (Diesel)</span>
                 </div>
-                {todayPerf.hsdReading ? (
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                    Recorded
-                  </Badge>
+                {latestHSDReading ? (
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">Recorded</Badge>
                 ) : (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 text-muted-foreground">
-                    Not Entered
-                  </Badge>
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 text-muted-foreground">Not Entered</Badge>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs pt-1">
                 <div>
                   <span className="text-muted-foreground">Volume:</span>
-                  <div className="font-bold text-sm">
-                    {todayPerf.hsdReading ? `${todayPerf.hsdReading.litres.toFixed(2)} L` : "0.00 L"}
-                  </div>
+                  <div className="font-bold text-sm">{latestHSDReading ? `${latestHSDReading.litres.toFixed(2)} L` : "—"}</div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Sales:</span>
                   <div className="font-bold text-sm">
-                    {todayPerf.hsdReading?.sales !== null && todayPerf.hsdReading?.sales !== undefined
-                      ? `₹${todayPerf.hsdReading.sales.toFixed(2)}`
-                      : todayPerf.hsdReading?.rate_missing
+                    {latestHSDReading?.sales !== null && latestHSDReading?.sales !== undefined
+                      ? `₹${latestHSDReading.sales.toFixed(2)}`
+                      : latestHSDReading?.rate_missing
                       ? "Rate Missing"
-                      : "₹0.00"}
+                      : "—"}
                   </div>
                 </div>
               </div>
