@@ -1,100 +1,96 @@
-import { Building2, Gauge, IndianRupee, TrendingUp, BarChart3, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Building2, Gauge, IndianRupee, TrendingUp, BarChart3, Clock } from "lucide-react";
 
 export function HowItWorks() {
   const steps = [
     {
       num: "01",
       icon: Building2,
-      title: "Set up your workspace",
+      title: "Set up station workspace",
       description:
-        "Create your business profile. One owner account can house multiple station workspaces with full database isolation.",
+        "Define your business profile and assign fuel tanks and nozzle registers with isolated database security.",
     },
     {
       num: "02",
       icon: Gauge,
-      title: "Enter daily meter readings",
+      title: "Log shift closing meter",
       description:
-        "Input MS and HSD closing totalizers. The opening meter is automatically locked and carried over from the prior close.",
+        "Attendant inputs nozzle closing totalizers. Opening reading carries over automatically without manual copying.",
     },
     {
       num: "03",
       icon: IndianRupee,
-      title: "Keep fuel rates updated",
+      title: "Maintain daily rates",
       description:
-        "Store retail selling rates and your dealer margin per litre. Price revisions apply automatically from their effective dates.",
+        "Store retail selling rates and dealer commission per litre. Price revisions apply from effective shift dates.",
     },
     {
       num: "04",
       icon: TrendingUp,
-      title: "Review daily closing sales",
+      title: "Instant shift reconciliation",
       description:
-        "Instantly view total litres dispensed, sales revenue, and earned RO gross profit without touching a calculator.",
+        "Review auto-calculated net litres dispensed, customer sales revenue, and earned dealer RO margin immediately.",
     },
     {
       num: "05",
       icon: BarChart3,
-      title: "Understand monthly net profit",
+      title: "Inspect monthly P&L",
       description:
-        "Log station expenses (salaries, genset fuel, power). Easy Manager reconciles monthly margin against expenses for real net profit.",
+        "Track forecourt operating expenses (wages, genset, power) and reconcile gross commission against real costs.",
     },
   ];
 
   return (
-    <section className="py-16 sm:py-24 border-t border-border/60 bg-muted/20">
+    <section className="py-14 sm:py-20 border-t border-border/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <Badge
-            variant="outline"
-            className="mb-3 border-primary/30 bg-primary/5 text-primary text-xs font-semibold px-3 py-1"
-          >
-            Simple Implementation
-          </Badge>
-          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
-            How Easy Manager works in practice.
+        {/* Section Header */}
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
+            <Clock className="h-3 w-3 text-primary" />
+            <span>05 · Operational Implementation</span>
+          </div>
+          <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
+            Live on your forecourt in under 5 minutes.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
-            No 6-week enterprise onboarding. You can set up your fuel station and log your first shift close in less than 5 minutes.
+          <p className="mt-2.5 text-sm sm:text-base text-muted-foreground leading-relaxed">
+            No 6-week ERP implementation. Zero training barrier for forecourt staff. Setup takes minutes and aligns directly with your pump&apos;s daily shift closing.
           </p>
         </div>
 
-        {/* Steps Grid */}
-        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.num}
-                className="relative rounded-2xl border border-border/80 bg-card p-5 shadow-xs flex flex-col justify-between hover:border-border transition-colors"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-extrabold text-primary/80 bg-primary/10 px-2 py-0.5 rounded-md">
-                      {step.num}
-                    </span>
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                      <Icon className="h-4 w-4" />
+        {/* Industrial Horizontal Process Ledger */}
+        <div className="mt-8 rounded-xl border border-border/80 bg-card text-card-foreground shadow-xs overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
+            {steps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={step.num}
+                  className="p-5 flex flex-col justify-between hover:bg-muted/10 transition-colors"
+                >
+                  <div>
+                    <div className="flex items-center justify-between pb-3 border-b border-border/50">
+                      <span className="font-mono text-xs font-bold text-primary">
+                        STEP {step.num}
+                      </span>
+                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                        <Icon className="h-3.5 w-3.5" />
+                      </div>
                     </div>
+
+                    <h3 className="mt-3 text-xs sm:text-sm font-bold text-foreground">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
 
-                  <h3 className="mt-4 text-sm font-bold text-foreground tracking-tight">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-                    {step.description}
-                  </p>
+                  <div className="mt-4 pt-2 text-[10px] font-mono text-muted-foreground">
+                    Zero onboarding overhead
+                  </div>
                 </div>
-
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute -right-2.5 top-1/2 -translate-y-1/2 z-10">
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-background border border-border text-muted-foreground shadow-xs">
-                      <ChevronRight className="h-3 w-3" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
