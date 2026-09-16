@@ -4,13 +4,13 @@ import {
   Check,
   ChevronRight,
   Droplet,
+  Gauge,
   IndianRupee,
   LayoutDashboard,
   LockKeyhole,
   ReceiptText,
   ShieldCheck,
   TrendingUp,
-  Gauge,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -76,13 +76,6 @@ export function Hero({ user }: HeroProps = {}) {
               Built for Indian petrol pump operations
             </div>
 
-            {user && (
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                Signed in as {user.email}
-              </div>
-            )}
-
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl lg:leading-[1.05]">
               The digital operating register for your petrol pump.
             </h1>
@@ -128,10 +121,10 @@ export function Hero({ user }: HeroProps = {}) {
               <div className="rounded-xl border bg-card p-4 sm:p-5">
                 <div className="flex items-center justify-between border-b pb-4">
                   <div>
-                    <p className="text-[11px] font-medium text-muted-foreground">Latest Performance</p>
-                    <p className="mt-0.5 text-sm font-semibold">15 September 2026</p>
+                    <p className="text-[11px] font-medium text-muted-foreground">Product preview</p>
+                    <p className="mt-0.5 text-sm font-semibold">Latest Performance · Sample</p>
                   </div>
-                  <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-medium text-primary">Recorded</span>
+                  <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-medium text-primary">Example</span>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-3">
