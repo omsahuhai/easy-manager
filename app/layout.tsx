@@ -9,8 +9,9 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Easy Manager | Petrol Pump Accounting",
-  description: "Mobile-first accounting and management solution for petrol pumps.",
+  title: "Easy Manager | Petrol Pump Operations",
+  description:
+    "A digital operating register for Indian petrol pump owners to manage daily meter readings, fuel rates, expenses, sales and profitability.",
 };
 
 const geistSans = Geist({
