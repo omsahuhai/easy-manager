@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessById } from "@/lib/queries/businesses";
 import { getReadingsWithContinuity } from "@/lib/queries/readings";
-import { getTodayPerformance, getMonthlyProfitForMonth } from "@/lib/queries/reports";
+import { getMonthlyProfitForMonth } from "@/lib/queries/reports";
 import { getTodayIST, getCurrentMonthIST, formatMonthIST, formatDateIST } from "@/lib/date";
 import { notFound, redirect } from "next/navigation";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -41,11 +41,10 @@ export default async function BusinessDashboard(props: {
   const currentMonthIST = getCurrentMonthIST();
   const currentMonthLabel = formatMonthIST(currentMonthIST);
 
-  // Fetch today's state plus the complete register so Overview can fall back
+  // Fetch business state plus the complete register so Overview can fall back
   // to the latest recorded operational date without displaying false zeros.
-  const [business, todayPerf, currentMonthProfit, recentReadings] = await Promise.all([
+  const [business, currentMonthProfit, recentReadings] = await Promise.all([
     getBusinessById(businessId),
-    getTodayPerformance(businessId, todayIST),
     getMonthlyProfitForMonth(businessId, currentMonthIST),
     getReadingsWithContinuity(businessId),
   ]);
@@ -173,10 +172,10 @@ export default async function BusinessDashboard(props: {
             <CardContent className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
               <div>
                 <p className="font-semibold text-sm">No meter readings have been recorded yet.</p>
-                <p className="text-xs text-muted-foreground mt-1">Start by entering today's meter readings.</p>
+                <p className="text-xs text-muted-foreground mt-1">Start by entering today&apos;s meter readings.</p>
               </div>
               <Button asChild size="sm">
-                <Link href={`/protected/dashboard/${business.id}/readings`}>Add Today's Reading</Link>
+                <Link href={`/protected/dashboard/${business.id}/readings`}>Add Today&apos;s Reading</Link>
               </Button>
             </CardContent>
           </Card>
@@ -187,12 +186,12 @@ export default async function BusinessDashboard(props: {
                 <div className="flex items-start gap-2.5">
                   <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-sm">Today's closing hasn't been recorded</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Enter today's meter readings to update this Overview with today's performance.</p>
+                    <p className="font-semibold text-sm">Today&apos;s closing hasn&apos;t been recorded</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Enter today&apos;s meter readings to update this Overview with today&apos;s performance.</p>
                   </div>
                 </div>
                 <Button asChild size="sm" variant="outline" className="whitespace-nowrap bg-background">
-                  <Link href={`/protected/dashboard/${business.id}/readings`}>Add Today's Reading</Link>
+                  <Link href={`/protected/dashboard/${business.id}/readings`}>Add Today&apos;s Reading</Link>
                 </Button>
               </div>
             )}
