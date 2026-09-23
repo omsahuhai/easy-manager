@@ -13,7 +13,7 @@ export function CalculationVisualizer() {
   const profit = litresSold * margin;
 
   return (
-    <section id="calculations" className="py-14 sm:py-20 border-t border-border/60 bg-muted/20">
+    <section id="calculations" className="py-16 sm:py-24 border-t border-border/60 bg-muted/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
@@ -24,7 +24,7 @@ export function CalculationVisualizer() {
           </p>
 
           {/* Quick Fuel Toggle */}
-          <div className="mt-8 inline-flex rounded-lg border border-border bg-card p-1 shadow-2xs">
+          <div className="mt-6 inline-flex rounded-lg border border-border bg-card p-1 shadow-2xs">
             <button
               type="button"
               id="calc-fuel-ms"

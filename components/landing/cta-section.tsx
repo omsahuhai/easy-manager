@@ -8,7 +8,7 @@ interface CtaSectionProps {
 
 export function CtaSection({ user }: CtaSectionProps) {
   return (
-    <section className="py-20 sm:py-28 border-t border-border/60">
+    <section className="py-16 sm:py-24 border-t border-border/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center space-y-6">
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 
 export function OperationalChecks() {
   return (
-    <section className="py-14 sm:py-20 border-t border-border/60 bg-muted/20">
+    <section className="py-16 sm:py-24 border-t border-border/60 bg-muted/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
@@ -15,7 +15,7 @@ export function OperationalChecks() {
         </div>
 
         {/* Authentic In-App Diagnostic Panel */}
-        <div className="mt-10 max-w-3xl mx-auto rounded-xl border border-border/80 bg-card p-4 sm:p-6 shadow-xs space-y-3.5">
+        <div className="mt-12 max-w-3xl mx-auto rounded-xl border border-border/80 bg-card p-4 sm:p-6 shadow-xs space-y-3.5">
           <div className="flex items-center justify-between pb-2 border-b border-border/60 text-xs">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-primary" />

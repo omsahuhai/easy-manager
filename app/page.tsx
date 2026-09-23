@@ -54,23 +54,29 @@ export default async function Home() {
       )}
 
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 lg:pt-16 lg:pb-20">
+      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 lg:pt-28 lg:pb-36">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="mx-auto max-w-3xl text-center">
+            {/* Context tag badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-muted/60 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-2xs mb-6 sm:mb-8">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Designed for Indian Petrol Pumps</span>
+            </div>
+
             {/* Simple, confident headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.12] text-balance">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15] text-balance">
               Petrol pump accounting, made simple.
             </h1>
 
             {/* Exactly one supporting sentence */}
-            <p className="mt-3.5 sm:mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
+            <p className="mt-6 sm:mt-8 text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
               Enter your daily readings. Easy Manager turns them into sales, RO profit, and clear reports.
             </p>
 
-            {/* Clean call to action */}
-            <div className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {/* Clean call to action with generous spacing */}
+            <div className="mt-8 sm:mt-10 lg:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
               {user ? (
-                <Button asChild size="lg" className="w-full sm:w-auto gap-2 px-7 font-semibold">
+                <Button asChild size="lg" className="w-full sm:w-auto h-12 px-8 text-base gap-2 font-semibold shadow-sm">
                   <Link href="/protected/dashboard">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Open Dashboard</span>
@@ -79,13 +85,13 @@ export default async function Home() {
                 </Button>
               ) : (
                 <>
-                  <Button asChild size="lg" className="w-full sm:w-auto gap-2 px-7 font-semibold">
+                  <Button asChild size="lg" className="w-full sm:w-auto h-12 px-8 text-base gap-2 font-semibold shadow-sm">
                     <Link href="/auth/sign-up">
                       <span>Get started</span>
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto px-7 font-semibold">
+                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 text-base font-semibold">
                     <Link href="/auth/login">
                       Sign in
                     </Link>
@@ -95,8 +101,8 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Authentic interactive product preview */}
-          <div className="mt-8 sm:mt-10">
+          {/* Authentic interactive product preview with generous top margin */}
+          <div className="mt-14 sm:mt-20 lg:mt-24">
             <HeroProductPreview />
           </div>
         </div>
