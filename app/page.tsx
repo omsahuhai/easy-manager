@@ -53,88 +53,80 @@ export default async function Home() {
         </div>
       )}
 
-      {/* HERO COCKPIT SECTION */}
-      <section className="relative overflow-hidden pt-6 pb-12 sm:pt-10 sm:pb-16 lg:pt-12 lg:pb-20">
-        {/* Subtle background ambient mesh */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-7xl bg-[radial-gradient(ellipse_at_center,rgba(var(--primary-rgb,0,0,0),0.05),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.04),transparent_70%)]" />
+      {/* HERO SECTION */}
+      <section className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-32">
+        {/* Subtle decorative radial gradient */}
+        <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-full max-w-7xl bg-[radial-gradient(ellipse_at_center,rgba(var(--primary-rgb,0,0,0),0.06),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05),transparent_70%)]" />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            {/* Left Column: Core Proposition & CTAs */}
-            <div className="lg:col-span-5 flex flex-col items-start text-left">
-              {/* Eyebrow badge */}
-              <div className="inline-flex items-center gap-2 rounded-md border border-border/80 bg-muted/40 px-2.5 py-1 text-[11px] font-medium text-foreground shadow-2xs">
-                <Droplet className="h-3 w-3 text-primary" />
-                <span>Forecourt SaaS · Built for Indian Petrol Pumps</span>
-              </div>
+          <div className="mx-auto max-w-3xl text-center">
+            {/* Positioning Pill */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-muted/40 px-3.5 py-1 text-xs font-medium text-foreground shadow-2xs backdrop-blur-xs">
+              <Droplet className="h-3.5 w-3.5 text-primary" />
+              <span>The digital operating register for Indian petrol pumps</span>
+            </div>
 
-              {/* Main Headline */}
-              <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-[1.12] text-balance">
-                The digital operating register for your petrol pump.
-              </h1>
+            {/* Main Headline */}
+            <h1 className="mt-6 text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.12] text-balance">
+              The digital operating register for your petrol pump.
+            </h1>
 
-              {/* Subheading */}
-              <p className="mt-3.5 text-sm sm:text-base text-muted-foreground leading-relaxed text-pretty">
-                Log daily MS and HSD meter totalizers, lock sequential opening readings automatically, and reconcile daily sales, dealer margins, and monthly profit without manual spreadsheet errors.
-              </p>
+            {/* Subheading */}
+            <p className="mt-5 text-sm sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
+              Turn daily meter readings into clear sales, RO profit, and monthly reports — without rebuilding the numbers by hand.
+            </p>
 
-              {/* Call to Action Buttons */}
-              <div className="mt-6 flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                {user ? (
-                  <Button asChild size="default" className="w-full sm:w-auto gap-2 px-6 shadow-xs font-semibold">
-                    <Link href="/protected/dashboard">
-                      <LayoutDashboard className="h-4 w-4" />
-                      <span>Open Dashboard</span>
+            {/* Call to Action Buttons */}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              {user ? (
+                <Button asChild size="lg" className="w-full sm:w-auto gap-2 px-7 shadow-xs font-semibold">
+                  <Link href="/protected/dashboard">
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Open Dashboard</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <>
+                  <Button asChild size="lg" className="w-full sm:w-auto gap-2 px-7 shadow-xs font-semibold">
+                    <Link href="/auth/sign-up">
+                      <span>Get started</span>
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
-                ) : (
-                  <>
-                    <Button asChild size="default" className="flex-1 sm:flex-initial gap-2 px-6 shadow-xs font-semibold">
-                      <Link href="/auth/sign-up">
-                        <span>Get started free</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild size="default" variant="outline" className="flex-1 sm:flex-initial px-5 font-semibold">
-                      <Link href="/auth/login">
-                        Sign in
-                      </Link>
-                    </Button>
-                  </>
-                )}
-              </div>
-
-              {/* Forecourt Credentials */}
-              <div className="mt-6 pt-5 border-t border-border/60 w-full flex flex-col gap-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1.5 font-medium text-foreground text-[11px]">
-                  <span>Supported Oil Marketing Networks:</span>
-                </div>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
-                  <span className="inline-flex items-center gap-1">
-                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                    IOCL
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                    BPCL
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                    HPCL
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                    Nayara &amp; Jio-bp
-                  </span>
-                </div>
-              </div>
+                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto px-7 font-semibold">
+                    <Link href="/auth/login">
+                      Sign in
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
 
-            {/* Right Column: Live Forecourt Terminal Preview */}
-            <div className="lg:col-span-7">
-              <HeroProductPreview />
+            {/* Feature Checklist Tags */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-primary" />
+                MS &amp; HSD Nozzle Registers
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-primary" />
+                Sequential Opening Continuation
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-primary" />
+                RO Gross Profit Tracking
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="h-3.5 w-3.5 text-primary" />
+                PostgreSQL RLS Security
+              </span>
             </div>
+          </div>
+
+          {/* Hero Product Visual Preview */}
+          <div className="mt-12 sm:mt-16">
+            <HeroProductPreview />
           </div>
         </div>
       </section>

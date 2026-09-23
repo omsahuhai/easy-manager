@@ -1,103 +1,86 @@
-import { Database, Lock, ShieldCheck, FileCheck, Layers, Server, Shield } from "lucide-react";
+import { Database, Lock, ShieldCheck, FileCheck, Layers, Server } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export function TrustSecurity() {
   const pillars = [
     {
       icon: Database,
-      spec: "DATABASE ENGINE",
       title: "PostgreSQL Row Level Security",
       description:
-        "Multi-tenant isolation enforced directly at the Postgres kernel. Every table query is filtered through Supabase RLS policies tied to your authenticated business identifier.",
+        "Multi-tenant isolation enforced directly at the database engine. Every query is filtered through Supabase RLS policies tied to your authenticated business identifier.",
     },
     {
       icon: Server,
-      spec: "ARITHMETIC LAYER",
-      title: "Security-Invoker Reporting Views",
+      title: "Database-Level Reporting Views",
       description:
-        "Sales, volumes, and margins are computed in database views using security_invoker = true. Calculations remain centralized and mathematically consistent across all reports.",
+        "Sales, volumes, and margins are computed in PostgreSQL views using security_invoker = true. Calculations remain centralized and mathematically consistent.",
     },
     {
       icon: FileCheck,
-      spec: "INPUT VALIDATION",
-      title: "Server-Side Zod Schema Guards",
+      title: "Server-Side Zod Validation",
       description:
-        "Every mutation is validated with strict server schemas before reaching the database. Negative volumes, out-of-sequence meters, or future dates are rejected before execution.",
-    },
-    {
-      icon: Layers,
-      spec: "MULTI-STATION",
-      title: "Workspace Tenant Isolation",
-      description:
-        "Operational records for Station A cannot be accessed by Station B, even within the same owner account. Clean boundaries for multi-pump operators.",
+        "Every mutation is validated with strict server schemas before reaching the database. Invalid numbers or future dates are rejected before execution.",
     },
     {
       icon: Lock,
-      spec: "AUTHENTICATION",
-      title: "Secure Session Cookie Auth",
+      title: "Secure Session Authentication",
       description:
         "Authentication handled via Supabase Auth with HTTP-only, secure cookies. Service role credentials remain strictly secret on the server.",
     },
     {
-      icon: ShieldCheck,
-      spec: "DATA SOVEREIGNTY",
-      title: "Zero Third-Party Tracking",
+      icon: Layers,
+      title: "Workspace Tenant Isolation",
       description:
-        "Your operational register data belongs to your dealership. No advertising pixels, no data selling, and no unauthorized third-party sharing.",
+        "Operational records for Station A cannot be accessed by Station B, even within the same owner account. Clear boundaries for multi-pump operators.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Data Ownership & Integrity",
+      description:
+        "Your operational register data is your property. No unauthorized third-party sharing, no tracking cookies, and no ad networks.",
     },
   ];
 
   return (
-    <section id="security" className="py-14 sm:py-20 border-t border-border/60 bg-muted/20">
+    <section id="security" className="py-16 sm:py-24 border-t border-border/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
-            <Shield className="h-3 w-3 text-primary" />
-            <span>06 · Technical Architecture</span>
-          </div>
-          <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
+        <div className="mx-auto max-w-3xl text-center">
+          <Badge
+            variant="outline"
+            className="mb-3 border-primary/30 bg-primary/5 text-primary text-xs font-semibold px-3 py-1"
+          >
+            Technical Architecture
+          </Badge>
+          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
             A database-first security model.
           </h2>
-          <p className="mt-2.5 text-sm sm:text-base text-muted-foreground leading-relaxed">
+          <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
             Easy Manager does not rely on marketing claims. We enforce tenant isolation, data validation, and calculation accuracy directly at the database layer.
           </p>
         </div>
 
-        {/* 2x3 Architecture Ledger */}
-        <div className="mt-8 rounded-xl border border-border/80 bg-card text-card-foreground shadow-xs overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/60">
-            {pillars.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="p-5 flex flex-col justify-between hover:bg-muted/10 transition-colors"
-                >
-                  <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                      <span className="text-[10px] font-mono text-primary font-bold tracking-wider">
-                        {item.spec}
-                      </span>
-                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                        <Icon className="h-3.5 w-3.5" />
-                      </div>
-                    </div>
-
-                    <h3 className="mt-3 text-xs sm:text-sm font-bold text-foreground">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-                      {item.description}
-                    </p>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pillars.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs flex flex-col justify-between hover:border-border transition-colors"
+              >
+                <div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
                   </div>
-
-                  <div className="mt-4 pt-2 text-[10px] font-mono text-muted-foreground">
-                    Enforced at database layer
-                  </div>
+                  <h3 className="mt-4 text-sm sm:text-base font-bold text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

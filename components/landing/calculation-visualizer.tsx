@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Fuel, Calculator } from "lucide-react";
+import { Fuel } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export function CalculationVisualizer() {
   const [selectedFuel, setSelectedFuel] = useState<"MS" | "HSD">("MS");
@@ -11,9 +12,10 @@ export function CalculationVisualizer() {
       name: "MS (Petrol)",
       opening: 128450.2,
       closing: 129620.8,
-      testing: 5.0,
+      testing: 5.0, // 5 litre measure test
       rate: 104.2,
       margin: 3.3,
+      accentColor: "amber",
     },
     HSD: {
       name: "HSD (Diesel)",
@@ -22,6 +24,7 @@ export function CalculationVisualizer() {
       testing: 5.0,
       rate: 87.54,
       margin: 3.15,
+      accentColor: "blue",
     },
   };
 
@@ -32,192 +35,190 @@ export function CalculationVisualizer() {
   const totalProfit = netLitres * current.margin;
 
   return (
-    <section id="calculations" className="py-14 sm:py-20 border-t border-border/60 bg-muted/20">
+    <section id="calculations" className="py-16 sm:py-24 border-t border-border/60 bg-muted/20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header with fuel selector */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
-              <Calculator className="h-3 w-3 text-primary" />
-              <span>02 · Forecourt Arithmetic</span>
-            </div>
-            <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
-              Your numbers calculate themselves.
-            </h2>
-            <p className="mt-2.5 text-sm sm:text-base text-muted-foreground leading-relaxed">
-              No handheld pocket calculators. No broken Excel formulas. Easy Manager connects meter movement, selling rates, and dealer commission in a single continuous calculation.
-            </p>
-          </div>
+        <div className="mx-auto max-w-3xl text-center">
+          <Badge
+            variant="outline"
+            className="mb-3 border-primary/30 bg-primary/5 text-primary text-xs font-semibold px-3 py-1"
+          >
+            Mathematical Engine
+          </Badge>
+          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
+            Your numbers calculate themselves.
+          </h2>
+          <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+            No pocket calculators. No broken Excel formulas. Easy Manager connects meter movement, selling rates, and dealer commission in real time.
+          </p>
 
-          {/* Interactive Fuel Switcher */}
-          <div className="inline-flex rounded-lg border border-border bg-card p-1 shadow-2xs self-start md:self-auto">
+          {/* Fuel switch toggle */}
+          <div className="mt-8 inline-flex rounded-xl border border-border bg-card p-1 shadow-xs">
             <button
               type="button"
               onClick={() => setSelectedFuel("MS")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
                 selectedFuel === "MS"
-                  ? "bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30"
+                  ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/40 shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Fuel className="h-3.5 w-3.5" />
-              <span>MS (Petrol)</span>
+              <span>MS (Petrol) Example</span>
             </button>
             <button
               type="button"
               onClick={() => setSelectedFuel("HSD")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
                 selectedFuel === "HSD"
-                  ? "bg-blue-500/15 text-blue-800 dark:text-blue-300 border border-blue-500/30"
+                  ? "bg-blue-500/15 text-blue-700 dark:text-blue-400 border border-blue-500/40 shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Fuel className="h-3.5 w-3.5" />
-              <span>HSD (Diesel)</span>
+              <span>HSD (Diesel) Example</span>
             </button>
           </div>
         </div>
 
-        {/* Continuous 3-Stage Arithmetic Ledger */}
-        <div className="mt-8 rounded-xl border border-border/80 bg-card text-card-foreground shadow-xs overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border/70">
-            {/* Stage 1: Volume Arithmetic */}
-            <div className="p-5 sm:p-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                  <span className="text-[11px] font-mono uppercase text-muted-foreground font-semibold">
-                    Stage 01 · Dispensing
-                  </span>
-                  <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
-                    Totalizer Delta
-                  </span>
-                </div>
-
-                <h3 className="mt-3 text-sm font-bold text-foreground">
-                  Net Litres Dispensed
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Totalizer difference minus mandatory 5-litre pump testing measure.
-                </p>
-
-                {/* Equation tape */}
-                <div className="mt-4 rounded-lg bg-muted/40 p-3 font-mono text-xs space-y-1.5">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Closing Reading:</span>
-                    <span className="text-foreground">{current.closing.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>– Opening Reading:</span>
-                    <span className="text-foreground">{current.opening.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>– 5L Test Jar:</span>
-                    <span className="text-foreground">-{current.testing.toFixed(2)}</span>
-                  </div>
-                  <div className="pt-1.5 border-t border-border/60 flex justify-between font-bold text-foreground">
-                    <span>Net Volume:</span>
-                    <span className="text-primary text-sm">{netLitres.toFixed(2)} L</span>
-                  </div>
-                </div>
+        {/* 3 Step Formula Breakdown */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Step 1: Volume Calculation */}
+          <div className="relative rounded-2xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <span className="text-xs font-bold text-muted-foreground">Step 1</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  Meter Arithmetic
+                </span>
               </div>
 
-              <div className="mt-4 pt-2 text-[11px] text-muted-foreground">
-                Mechanical pump calibration deducted.
+              <h3 className="mt-4 text-base font-bold text-foreground">
+                Net Litres Dispensed
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Opening meter is subtracted from closing meter, deducting mandatory testing litres.
+              </p>
+
+              {/* Equation Box */}
+              <div className="mt-5 rounded-xl border border-border/70 bg-muted/40 p-3.5 space-y-2 font-mono text-xs">
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>Closing Meter:</span>
+                  <span className="text-foreground font-semibold">{current.closing.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>– Opening Meter:</span>
+                  <span className="text-foreground font-semibold">{current.opening.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>– Testing Jar:</span>
+                  <span className="text-foreground font-semibold">{current.testing.toFixed(2)}</span>
+                </div>
+                <div className="border-t border-border/60 pt-2 flex justify-between items-center font-bold">
+                  <span className="text-primary font-sans">Net Litres:</span>
+                  <span className="text-foreground text-sm">{netLitres.toFixed(2)} L</span>
+                </div>
               </div>
             </div>
 
-            {/* Stage 2: Sales Revenue */}
-            <div className="p-5 sm:p-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                  <span className="text-[11px] font-mono uppercase text-muted-foreground font-semibold">
-                    Stage 02 · Price Engine
-                  </span>
-                  <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
-                    Effective Rate
-                  </span>
-                </div>
+            <div className="mt-6 pt-3 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Automatic trigger</span>
+              <span className="font-semibold text-foreground">Immediate</span>
+            </div>
+          </div>
 
-                <h3 className="mt-3 text-sm font-bold text-foreground">
-                  Sales Turnover
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Net volume multiplied by applicable selling price on shift date.
-                </p>
-
-                {/* Equation tape */}
-                <div className="mt-4 rounded-lg bg-muted/40 p-3 font-mono text-xs space-y-1.5">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Net Volume:</span>
-                    <span className="text-foreground">{netLitres.toFixed(2)} L</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>× Selling Rate:</span>
-                    <span className="text-foreground">₹{current.rate.toFixed(2)} / L</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Price Rule:</span>
-                    <span className="text-muted-foreground text-[10px]">Active revision</span>
-                  </div>
-                  <div className="pt-1.5 border-t border-border/60 flex justify-between font-bold text-foreground">
-                    <span>Customer Sales:</span>
-                    <span className="text-blue-600 dark:text-blue-400 text-sm">
-                      ₹{totalSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                </div>
+          {/* Step 2: Sales Revenue Calculation */}
+          <div className="relative rounded-2xl border border-border/80 bg-card p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <span className="text-xs font-bold text-muted-foreground">Step 2</span>
+                <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                  Rate Engine
+                </span>
               </div>
 
-              <div className="mt-4 pt-2 text-[11px] text-muted-foreground">
-                Matched to daily effective retail price.
+              <h3 className="mt-4 text-base font-bold text-foreground">
+                Sales Revenue
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Net dispensed litres multiplied by the applicable retail pump selling rate.
+              </p>
+
+              {/* Equation Box */}
+              <div className="mt-5 rounded-xl border border-border/70 bg-muted/40 p-3.5 space-y-2 font-mono text-xs">
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>Net Volume:</span>
+                  <span className="text-foreground font-semibold">{netLitres.toFixed(2)} L</span>
+                </div>
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>× Selling Rate:</span>
+                  <span className="text-foreground font-semibold">₹{current.rate.toFixed(2)} / L</span>
+                </div>
+                <div className="text-[10px] text-muted-foreground italic">
+                  *Matched by reading date in rate register
+                </div>
+                <div className="border-t border-border/60 pt-2 flex justify-between items-center font-bold">
+                  <span className="text-primary font-sans">Gross Sales:</span>
+                  <span className="text-foreground text-sm">
+                    ₹{totalSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Stage 3: RO Gross Margin */}
-            <div className="p-5 sm:p-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                  <span className="text-[11px] font-mono uppercase text-muted-foreground font-semibold">
-                    Stage 03 · Commission
-                  </span>
-                  <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                    RO Margin
-                  </span>
-                </div>
+            <div className="mt-6 pt-3 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Cash / Card collection</span>
+              <span className="font-semibold text-foreground">Reconciled</span>
+            </div>
+          </div>
 
-                <h3 className="mt-3 text-sm font-bold text-foreground">
-                  RO Gross Profit
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Net volume multiplied by dealer commission credited by oil company.
-                </p>
-
-                {/* Equation tape */}
-                <div className="mt-4 rounded-lg bg-muted/40 p-3 font-mono text-xs space-y-1.5">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Net Volume:</span>
-                    <span className="text-foreground">{netLitres.toFixed(2)} L</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>× Dealer Margin:</span>
-                    <span className="text-foreground">₹{current.margin.toFixed(2)} / L</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Commission Rule:</span>
-                    <span className="text-muted-foreground text-[10px]">Fixed dealer RO</span>
-                  </div>
-                  <div className="pt-1.5 border-t border-border/60 flex justify-between font-bold text-emerald-600 dark:text-emerald-400">
-                    <span>Gross Earnings:</span>
-                    <span className="text-sm">
-                      ₹{totalProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                </div>
+          {/* Step 3: RO Gross Profit Calculation */}
+          <div className="relative rounded-2xl border border-primary/40 bg-card p-5 sm:p-6 shadow-xs flex flex-col justify-between ring-1 ring-primary/20">
+            <div>
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <span className="text-xs font-bold text-primary">Step 3</span>
+                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  Dealer Earnings
+                </span>
               </div>
 
-              <div className="mt-4 pt-2 text-[11px] text-muted-foreground">
-                Independent of bank reconciliation.
+              <h3 className="mt-4 text-base font-bold text-foreground">
+                RO Gross Profit
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Net litres multiplied by your oil company dealer commission (RO margin).
+              </p>
+
+              {/* Equation Box */}
+              <div className="mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/[0.03] dark:bg-emerald-500/[0.06] p-3.5 space-y-2 font-mono text-xs">
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>Net Volume:</span>
+                  <span className="text-foreground font-semibold">{netLitres.toFixed(2)} L</span>
+                </div>
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>× Dealer Margin:</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    ₹{current.margin.toFixed(2)} / L
+                  </span>
+                </div>
+                <div className="text-[10px] text-muted-foreground italic">
+                  *Oil marketing company retail commission
+                </div>
+                <div className="border-t border-border/60 pt-2 flex justify-between items-center font-bold">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-sans">
+                    RO Gross Profit:
+                  </span>
+                  <span className="text-emerald-600 dark:text-emerald-400 text-sm">
+                    ₹{totalProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
               </div>
+            </div>
+
+            <div className="mt-6 pt-3 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Carried to month-end</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                Guaranteed Exact
+              </span>
             </div>
           </div>
         </div>
