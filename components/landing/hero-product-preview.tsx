@@ -12,16 +12,12 @@ import {
   CheckCircle2,
   Gauge,
   LayoutDashboard,
-  Receipt,
   PlusCircle,
-  FileText,
-  Settings,
   Smartphone,
   Monitor,
   Loader2,
   Check,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
 export function HeroProductPreview() {
@@ -96,65 +92,60 @@ export function HeroProductPreview() {
   const renderMobileApp = (idPrefix: string = "mobile") => {
     const closingInputId = `${idPrefix}-closing`;
     return (
-    <div className="w-full text-left bg-background rounded-2xl border border-border/80 shadow-xl overflow-hidden">
-      {/* Mobile App Header (matches app/protected/layout.tsx nav on mobile) */}
-      <div className="flex items-center justify-between border-b border-border/70 bg-muted/40 px-4 py-3">
+    <div className="w-full text-left bg-card rounded-2xl border border-border/80 shadow-md shadow-black/5 dark:shadow-black/20 overflow-hidden">
+      {/* Device Top Status Bar */}
+      <div className="flex items-center justify-between px-4 pt-2.5 pb-1.5 bg-muted/30 border-b border-border/50 text-[10px] text-muted-foreground font-medium">
+        <span>09:41</span>
+        <div className="h-2 w-12 bg-muted-foreground/20 rounded-full" />
+        <span>Today</span>
+      </div>
+
+      {/* Mobile App Header */}
+      <div className="flex items-center justify-between border-b border-border/70 bg-card px-4 py-2.5">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs">
-            <Fuel className="h-4 w-4" />
+            <Fuel className="h-3.5 w-3.5" />
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-bold tracking-tight text-foreground leading-tight">
               Easy Manager
             </span>
-            <span className="text-[10px] text-muted-foreground font-medium">
+            <span className="text-[10px] text-muted-foreground">
               IOCL Outlet #241098
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
           <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-            Live Forecourt
+            Open
           </span>
         </div>
       </div>
 
-      {/* Business Header (matches app/protected/dashboard/[businessId]/layout.tsx) */}
-      <div className="px-4 pt-3.5 pb-2.5 bg-background">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold tracking-tight text-foreground">
-                Kisan Petroleum
-              </h2>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary capitalize">
-                petrol pump
-              </span>
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Today · 24 Sep 2026
-            </p>
-          </div>
-
-          <div className="flex items-center gap-1 text-[11px] font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded-md border border-border/60">
-            <Calendar className="h-3 w-3" />
-            <span>IST</span>
-          </div>
+      {/* Business Header */}
+      <div className="px-4 py-2.5 bg-card border-b border-border/40 flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-bold tracking-tight text-foreground">
+            Kisan Petroleum
+          </h2>
+          <p className="text-[11px] text-muted-foreground">
+            24 Sep 2026
+          </p>
         </div>
       </div>
 
-      {/* Mobile Workspace Navigation Tabs (matches components/dashboard/workspace-nav.tsx) */}
-      <div className="border-b border-border px-3 bg-background">
-        <nav className="flex items-center gap-1 overflow-x-auto scrollbar-none pb-px text-xs">
+      {/* Mobile Workspace Navigation Tabs */}
+      <div className="border-b border-border/70 px-3.5 py-2 bg-card">
+        <div className="grid grid-cols-2 gap-1 rounded-lg border border-border/70 bg-muted/40 p-1">
           <button
             type="button"
             onClick={() => setMobileTab("readings")}
-            className={`flex items-center gap-1.5 px-3 py-2.5 font-medium border-b-2 whitespace-nowrap transition-colors ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${
               mobileTab === "readings"
-                ? "border-primary text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                ? "bg-card text-foreground shadow-2xs font-bold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Gauge className="h-3.5 w-3.5" />
@@ -164,46 +155,28 @@ export function HeroProductPreview() {
           <button
             type="button"
             onClick={() => setMobileTab("overview")}
-            className={`flex items-center gap-1.5 px-3 py-2.5 font-medium border-b-2 whitespace-nowrap transition-colors ${
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${
               mobileTab === "overview"
-                ? "border-primary text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                ? "bg-card text-foreground shadow-2xs font-bold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <LayoutDashboard className="h-3.5 w-3.5" />
             <span>Overview</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setMobileTab("readings")}
-            className="flex items-center gap-1.5 px-3 py-2.5 font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground whitespace-nowrap"
-          >
-            <IndianRupee className="h-3.5 w-3.5" />
-            <span>Fuel Rates</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setMobileTab("readings")}
-            className="flex items-center gap-1.5 px-3 py-2.5 font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground whitespace-nowrap"
-          >
-            <Receipt className="h-3.5 w-3.5" />
-            <span>Expenses</span>
-          </button>
-        </nav>
+        </div>
       </div>
 
       {/* Mobile Screen Content */}
-      <div className="p-3.5 sm:p-4 bg-muted/20 min-h-[380px]">
+      <div className="p-3.5 sm:p-4 bg-muted/20 min-h-[360px]">
         {mobileTab === "readings" ? (
-          /* TAB 1: Real Mobile Reading Form (matches components/readings/reading-form.tsx) */
-          <div className="space-y-3.5">
+          /* TAB 1: Mobile Reading Form */
+          <div className="space-y-3">
             {/* Success Feedback Toast */}
             {showSavedToast && (
               <div className="p-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-medium flex items-center gap-2 animate-in fade-in duration-200">
                 <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span>Daily meter reading saved successfully. Shift verified!</span>
+                <span>Reading saved successfully.</span>
               </div>
             )}
 
@@ -216,23 +189,19 @@ export function HeroProductPreview() {
                   </div>
                   <div>
                     <h3 className="text-xs sm:text-sm font-bold text-foreground">
-                      Record Meter Reading
+                      Nozzle 1 Reading
                     </h3>
                     <p className="text-[10px] text-muted-foreground">
-                      Enter opening and closing totalizers
+                      Enter today&apos;s closing reading
                     </p>
                   </div>
                 </div>
-
-                <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                  Nozzle 01
-                </span>
               </div>
 
-              {/* Fuel Type Selector (Real App Buttons) */}
+              {/* Fuel Type Selector */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-semibold text-foreground block">
-                  Fuel Type
+                  Fuel Product
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -245,7 +214,7 @@ export function HeroProductPreview() {
                     }`}
                   >
                     <span className="h-2 w-2 rounded-full bg-amber-500" />
-                    <span>MS (Petrol)</span>
+                    <span>Petrol (MS)</span>
                   </button>
 
                   <button
@@ -258,12 +227,12 @@ export function HeroProductPreview() {
                     }`}
                   >
                     <span className="h-2 w-2 rounded-full bg-blue-500" />
-                    <span>HSD (Diesel)</span>
+                    <span>Diesel (HSD)</span>
                   </button>
                 </div>
               </div>
 
-              {/* Opening & Closing Readings (Mobile Stack) */}
+              {/* Opening & Closing Readings */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Opening Reading (Auto-locked) */}
                 <div className="space-y-1">
@@ -272,14 +241,14 @@ export function HeroProductPreview() {
                       Opening Reading (L)
                     </span>
                     <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium">
-                      <Lock className="h-2.5 w-2.5 text-primary" /> Auto-filled
+                      <Lock className="h-2.5 w-2.5 text-primary" /> Yesterday
                     </span>
                   </div>
-                  <div className="h-9 px-3 flex items-center rounded-lg border border-border bg-muted/60 font-mono text-xs font-semibold text-muted-foreground">
+                  <div className="h-10 px-3 flex items-center rounded-lg border border-border/80 bg-muted/50 font-mono text-xs font-semibold text-muted-foreground">
                     {activeOpening.toFixed(2)}
                   </div>
                   <p className="text-[9px] text-muted-foreground">
-                    Locked from yesterday&apos;s close
+                    Carried over automatically
                   </p>
                 </div>
 
@@ -304,49 +273,39 @@ export function HeroProductPreview() {
                       const str = e.target.value;
                       setClosings((prev) => ({ ...prev, [fuelType]: str }));
                     }}
-                    className="h-9 font-mono text-xs font-bold text-foreground bg-background border-primary/40 focus-visible:ring-primary shadow-xs"
+                    className="h-10 font-mono text-xs font-bold text-foreground bg-background border-primary/40 focus-visible:ring-primary shadow-xs"
                   />
                   <p className="text-[9px] text-muted-foreground">
-                    Current nozzle meter value
+                    From nozzle meter display
                   </p>
                 </div>
               </div>
 
-              {/* Real-time UX Live Preview Box (matches real reading-form.tsx) */}
-              <div className="p-3 rounded-lg bg-muted/80 border border-border/80 space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground font-medium">
-                    Calculated Volume (UX Preview):
-                  </span>
-                  <span className="font-mono font-bold text-foreground text-sm">
-                    {netVolume.toFixed(2)} Litres
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/50 pt-1.5">
-                  <span>Testing Jar: -5.00 L</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-                    Sequential shift chain verified
+              {/* Immediate Calculation Result (No nested cards, clean grouping) */}
+              <div className="rounded-lg bg-muted/40 p-3 space-y-2 border border-border/60">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <span className="text-[11px] font-medium text-muted-foreground">Litres Sold</span>
+                    <span className="text-[10px] text-muted-foreground block">5 L morning testing deducted</span>
+                  </div>
+                  <span className="font-mono text-base font-bold text-foreground">
+                    {netVolume.toFixed(2)} L
                   </span>
                 </div>
-              </div>
 
-              {/* Dynamic Financial Outcome summary */}
-              <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-                <div className="p-2 rounded-lg border border-border/70 bg-background">
-                  <span className="text-[10px] text-muted-foreground block font-medium">
-                    Turnover ({fuelType})
-                  </span>
-                  <span className="font-mono font-bold text-foreground text-xs">
-                    ₹{activeSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg border border-border/70 bg-background">
-                  <span className="text-[10px] text-muted-foreground block font-medium">
-                    RO Margin ({fuelType})
-                  </span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">
-                    ₹{activeProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
+                <div className="pt-2 border-t border-border/50 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-[10px] text-muted-foreground block">Today&apos;s Sale</span>
+                    <span className="font-mono font-bold text-foreground text-xs sm:text-sm">
+                      ₹{activeSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground block">Your Margin</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
+                      ₹{activeProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -355,73 +314,26 @@ export function HeroProductPreview() {
                 type="button"
                 onClick={handleSaveReading}
                 disabled={isSaving}
-                className="w-full h-10 rounded-lg bg-primary text-primary-foreground font-semibold text-xs flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-sm active:scale-[0.99]"
+                className="w-full h-11 rounded-lg bg-primary text-primary-foreground font-semibold text-xs flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-xs active:scale-[0.99]"
               >
                 {isSaving ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Saving to Daily Register...</span>
+                    <span>Saving...</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="h-4 w-4" />
-                    <span>Save Meter Reading</span>
+                    <span>Save Reading</span>
                   </>
                 )}
               </button>
             </div>
           </div>
         ) : (
-          /* TAB 2: Real Mobile Overview (matches app/protected/dashboard/[businessId]/page.tsx) */
-          <div className="space-y-3.5">
-            {/* Operational Quick Actions Grid (matches QuickActions component) */}
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setMobileTab("readings")}
-                className="p-2.5 rounded-lg border border-border bg-card hover:bg-accent text-left transition-colors shadow-2xs flex items-center gap-2"
-              >
-                <div className="p-1.5 rounded-md bg-primary/10 text-primary">
-                  <PlusCircle className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-foreground">Add Reading</div>
-                  <div className="text-[9px] text-muted-foreground">Daily meters</div>
-                </div>
-              </button>
-
-              <div className="p-2.5 rounded-lg border border-border bg-card text-left shadow-2xs flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-primary/10 text-primary">
-                  <IndianRupee className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-foreground">Fuel Rates</div>
-                  <div className="text-[9px] text-muted-foreground">Selling & margin</div>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-lg border border-border bg-card text-left shadow-2xs flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-primary/10 text-primary">
-                  <Receipt className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-foreground">Expenses</div>
-                  <div className="text-[9px] text-muted-foreground">Power & wages</div>
-                </div>
-              </div>
-
-              <div className="p-2.5 rounded-lg border border-border bg-card text-left shadow-2xs flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-primary/10 text-primary">
-                  <FileText className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-foreground">Reports</div>
-                  <div className="text-[9px] text-muted-foreground">Monthly profit</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Performance Stat Cards (matches StatCard component on mobile) */}
+          /* TAB 2: Station Overview */
+          <div className="space-y-3">
+            {/* Performance Stat Cards */}
             <div className="grid grid-cols-2 gap-2.5">
               <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
                 <div className="flex items-center justify-between text-muted-foreground">
@@ -438,27 +350,27 @@ export function HeroProductPreview() {
 
               <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-[11px] font-medium">Fuel Sold</span>
+                  <span className="text-[11px] font-medium">Litres Sold</span>
                   <Droplet className="h-3.5 w-3.5 text-blue-500" />
                 </div>
                 <div className="mt-1 text-base font-bold font-mono text-foreground tracking-tight">
                   {totalDayVolume.toFixed(2)} L
                 </div>
                 <p className="mt-0.5 text-[9px] text-muted-foreground">
-                  Net after 5L testing
+                  After 5L testing
                 </p>
               </div>
 
               <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span className="text-[11px] font-medium">RO Profit</span>
+                  <span className="text-[11px] font-medium">Your Margin</span>
                   <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
                 </div>
                 <div className="mt-1 text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 tracking-tight">
                   ₹{totalDayProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <p className="mt-0.5 text-[9px] text-muted-foreground">
-                  Estimated margin
+                  Your commission
                 </p>
               </div>
 
@@ -476,17 +388,17 @@ export function HeroProductPreview() {
               </div>
             </div>
 
-            {/* Today's Fuel Breakdown (matches real overview card) */}
+            {/* Today's Fuel Breakdown */}
             <div className="rounded-xl border border-border bg-card p-3.5 shadow-2xs space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-foreground pb-1 border-b border-border/60">
-                <span>Today&apos;s Fuel Breakdown</span>
+                <span>Fuel Breakdown</span>
                 <Droplet className="h-3.5 w-3.5 text-primary" />
               </div>
 
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  <span className="font-semibold text-foreground">MS (Petrol)</span>
+                  <span className="font-semibold text-foreground">Petrol (MS)</span>
                 </div>
                 <span className="font-mono text-muted-foreground">
                   {totalMsNet.toFixed(2)} L · ₹{(totalMsNet * msRate).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
@@ -496,7 +408,7 @@ export function HeroProductPreview() {
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-blue-500" />
-                  <span className="font-semibold text-foreground">HSD (Diesel)</span>
+                  <span className="font-semibold text-foreground">Diesel (HSD)</span>
                 </div>
                 <span className="font-mono text-muted-foreground">
                   {totalHsdNet.toFixed(2)} L · ₹{(totalHsdNet * hsdRate).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
@@ -509,12 +421,9 @@ export function HeroProductPreview() {
 
       {/* Mobile Footer Status Strip */}
       <div className="border-t border-border/70 bg-card px-4 py-2.5 flex items-center justify-between text-[11px] text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-          <span>Daily register verified</span>
-        </div>
-        <span className="font-mono font-medium text-foreground">
-          ₹{totalDaySales.toLocaleString("en-IN", { maximumFractionDigits: 0 })} total
+        <span>Today&apos;s Total</span>
+        <span className="font-mono font-bold text-foreground">
+          ₹{totalDaySales.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
         </span>
       </div>
     </div>
@@ -571,13 +480,13 @@ export function HeroProductPreview() {
               }`}
             >
               <Smartphone className="h-3.5 w-3.5" />
-              <span>Mobile App View</span>
+              <span>Mobile View</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1 text-xs text-muted-foreground font-mono">
+          <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
             <Calendar className="h-3.5 w-3.5" />
-            <span>Today (IST)</span>
+            <span>Today</span>
           </div>
         </div>
       </div>
@@ -593,7 +502,7 @@ export function HeroProductPreview() {
             <div className="w-28 h-1 bg-white/30 rounded-full mx-auto mt-3" />
           </div>
           <p className="mt-4 text-xs text-muted-foreground text-center">
-            Exact responsive view running on pump managers&apos; smartphones.
+            Responsive mobile screen preview.
           </p>
         </div>
       ) : (
@@ -614,7 +523,7 @@ export function HeroProductPreview() {
 
             <div className="rounded-xl border border-border/70 bg-card p-4 shadow-2xs">
               <div className="flex items-center justify-between text-muted-foreground">
-                <span className="text-xs font-medium">Fuel Dispensed</span>
+                <span className="text-xs font-medium">Litres Sold</span>
                 <Droplet className="h-4 w-4 text-blue-500" />
               </div>
               <div className="mt-2 text-lg sm:text-xl font-bold tracking-tight text-foreground font-mono">
@@ -625,18 +534,18 @@ export function HeroProductPreview() {
 
             <div className="rounded-xl border border-border/70 bg-card p-4 shadow-2xs">
               <div className="flex items-center justify-between text-muted-foreground">
-                <span className="text-xs font-medium">RO Gross Margin</span>
+                <span className="text-xs font-medium">Your Margin</span>
                 <TrendingUp className="h-4 w-4 text-emerald-500" />
               </div>
               <div className="mt-2 text-lg sm:text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 font-mono">
                 ₹{totalDayProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">Dealer commission</p>
+              <p className="mt-1 text-xs text-muted-foreground">Your commission</p>
             </div>
 
             <div className="rounded-xl border border-border/70 bg-card p-4 shadow-2xs">
               <div className="flex items-center justify-between text-muted-foreground">
-                <span className="text-xs font-medium">Month Expenses</span>
+                <span className="text-xs font-medium">Monthly Expenses</span>
                 <ReceiptText className="h-4 w-4 text-rose-500" />
               </div>
               <div className="mt-2 text-lg sm:text-xl font-bold tracking-tight text-foreground font-mono">
@@ -651,10 +560,10 @@ export function HeroProductPreview() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
               <div>
                 <h3 className="text-sm sm:text-base font-bold text-foreground">
-                  Interactive Forecourt Register
+                  Daily Nozzle Register
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Edit closing readings below to see real-time calculation.
+                  Change the closing reading to test live calculation.
                 </p>
               </div>
 
@@ -670,7 +579,7 @@ export function HeroProductPreview() {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  MS (Petrol)
+                  Petrol (MS)
                 </button>
                 <button
                   type="button"
@@ -682,7 +591,7 @@ export function HeroProductPreview() {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  HSD (Diesel)
+                  Diesel (HSD)
                 </button>
               </div>
             </div>
@@ -693,29 +602,29 @@ export function HeroProductPreview() {
                 <div className="flex items-center gap-2">
                   <span className={`h-2.5 w-2.5 rounded-full ${fuelType === "MS" ? "bg-amber-500" : "bg-blue-500"}`} />
                   <span className="font-bold text-foreground text-sm">
-                    {fuelType === "MS" ? "Nozzle 01 · Motor Spirit" : "Nozzle 02 · High Speed Diesel"}
+                    {fuelType === "MS" ? "Nozzle 1 · Petrol (MS)" : "Nozzle 2 · Diesel (HSD)"}
                   </span>
                 </div>
-                <span className="text-xs font-mono text-muted-foreground">
-                  Rate: <strong className="text-foreground font-semibold">₹{activeRate.toFixed(2)}/L</strong> · Margin: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">₹{activeMargin.toFixed(2)}/L</strong>
+                <span className="text-xs text-muted-foreground">
+                  Rate: <strong className="text-foreground font-mono font-semibold">₹{activeRate.toFixed(2)}/L</strong> · Margin: <strong className="text-emerald-600 dark:text-emerald-400 font-mono font-semibold">₹{activeMargin.toFixed(2)}/L</strong>
                 </span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 {/* Opening Reading (Auto-Locked) */}
                 <div>
-                  <span className="text-[11px] uppercase font-semibold text-muted-foreground flex items-center gap-1 mb-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1 mb-1.5">
                     Opening <Lock className="h-3 w-3 text-primary" />
                   </span>
                   <div id="hero-opening" className="h-9 px-3 flex items-center rounded-lg border border-border bg-muted/50 font-mono text-xs font-medium text-foreground">
                     {activeOpening.toFixed(2)}
                   </div>
-                  <span className="text-[10px] text-muted-foreground mt-1 block">Locked baseline</span>
+                  <span className="text-[10px] text-muted-foreground mt-1 block">From yesterday</span>
                 </div>
 
                 {/* Closing Reading (Editable Input) */}
                 <div>
-                  <label htmlFor="hero-closing" className="text-[11px] uppercase font-semibold text-muted-foreground block mb-1.5">
+                  <label htmlFor="hero-closing" className="text-[11px] font-medium text-muted-foreground block mb-1.5">
                     Closing Reading
                   </label>
                   <Input
@@ -731,44 +640,43 @@ export function HeroProductPreview() {
                     }}
                     className="h-9 font-mono text-xs font-bold text-foreground bg-background border-primary/40 focus-visible:ring-primary shadow-2xs"
                   />
-                  <span className="text-[10px] text-primary mt-1 block font-medium">Editable by operator</span>
+                  <span className="text-[10px] text-primary mt-1 block font-medium">Tap to edit</span>
                 </div>
 
                 {/* 5L Testing jar */}
                 <div>
-                  <span className="text-[11px] uppercase font-semibold text-muted-foreground block mb-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground block mb-1.5">
                     Testing Jar
                   </span>
                   <div id="hero-testing" className="h-9 px-3 flex items-center rounded-lg border border-border bg-muted/50 font-mono text-xs text-muted-foreground">
                     -5.00 L
                   </div>
-                  <span className="text-[10px] text-muted-foreground mt-1 block">Standard morning test</span>
+                  <span className="text-[10px] text-muted-foreground mt-1 block">Morning test</span>
                 </div>
 
                 {/* Net Dispensed Litres */}
                 <div>
-                  <span className="text-[11px] uppercase font-semibold text-muted-foreground block mb-1.5">
-                    Net Litres
+                  <span className="text-[11px] font-medium text-muted-foreground block mb-1.5">
+                    Litres Sold
                   </span>
                   <div id="hero-net" className="h-9 px-3 flex items-center rounded-lg border border-primary/30 bg-primary/5 font-mono text-xs font-bold text-foreground">
                     {netVolume.toFixed(2)} L
                   </div>
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 block font-medium">Automatic result</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 block font-medium">Calculated</span>
                 </div>
               </div>
 
-              {/* Live Financial Outcome Ribbon */}
+              {/* Financial Outcome Ribbon */}
               <div className="pt-3 border-t border-border/60 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>Sequential shift chain verified</span>
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                  <span>Nozzle sales calculated automatically</span>
                 </div>
                 <div className="flex items-center gap-4 text-xs font-mono">
                   <span>
-                    Turnover: <strong className="text-foreground font-bold">₹{activeSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                    Sale: <strong className="text-foreground font-bold">₹{activeSales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                   </span>
                   <span>
-                    RO Profit: <strong className="text-emerald-600 dark:text-emerald-400 font-bold">₹{activeProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                    Margin: <strong className="text-emerald-600 dark:text-emerald-400 font-bold">₹{activeProfit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                   </span>
                 </div>
               </div>
@@ -783,11 +691,12 @@ export function HeroProductPreview() {
     <div className="relative mx-auto w-full max-w-4xl">
       {/* 
         On mobile viewports (< 768px):
-        Show EXACTLY what the app looks like on mobile!
-        Full-width, clean smartphone interface with the real app's header, tabs, and form.
+        Clean smartphone interface framed cleanly for real phone widths.
       */}
-      <div className="block md:hidden">
-        {renderMobileApp("mobile")}
+      <div className="block md:hidden mx-auto max-w-sm sm:max-w-md">
+        <div className="rounded-[1.75rem] p-1.5 sm:p-2 bg-card/70 border border-border/80 shadow-xl shadow-black/5 dark:shadow-black/25">
+          {renderMobileApp("mobile")}
+        </div>
       </div>
 
       {/* 

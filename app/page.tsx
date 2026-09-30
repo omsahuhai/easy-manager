@@ -32,14 +32,14 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col antialiased selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col antialiased selection:bg-primary selection:text-primary-foreground bg-subtle-pattern">
       {/* Navigation Header */}
       <LandingNavbar user={user} />
 
       {/* Environment Notice if unconfigured */}
       {!hasEnvVars && (
         <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-900 dark:text-amber-200">
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-900 dark:text-amber-200 shadow-2xs">
             <div className="flex items-start gap-3">
               <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <div className="space-y-1">
@@ -54,29 +54,29 @@ export default async function Home() {
       )}
 
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 lg:pt-28 lg:pb-36">
+      <section className="relative overflow-hidden pt-8 pb-14 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
           <div className="mx-auto max-w-3xl text-center">
             {/* Context tag badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-muted/60 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-2xs mb-6 sm:mb-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/90 px-3.5 py-1 text-xs font-medium text-foreground shadow-xs mb-5 sm:mb-6">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Designed for Indian Petrol Pumps</span>
             </div>
 
             {/* Simple, confident headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15] text-balance">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-[1.2] text-balance">
               Petrol pump accounting, made simple.
             </h1>
 
             {/* Exactly one supporting sentence */}
-            <p className="mt-6 sm:mt-8 text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
-              Enter your daily readings. Easy Manager turns them into sales, RO profit, and clear reports.
+            <p className="mt-3.5 sm:mt-5 text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto text-pretty">
+              Enter your daily readings. Easy Manager turns them into sales, your profit, and clear reports.
             </p>
 
-            {/* Clean call to action with generous spacing */}
-            <div className="mt-8 sm:mt-10 lg:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
+            {/* Clean call to action with comfortable touch targets */}
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-xs sm:max-w-none mx-auto">
               {user ? (
-                <Button asChild size="lg" className="w-full sm:w-auto h-12 px-8 text-base gap-2 font-semibold shadow-sm">
+                <Button asChild size="lg" className="w-full sm:w-auto h-11 sm:h-12 px-7 text-sm sm:text-base gap-2 font-semibold shadow-xs">
                   <Link href="/protected/dashboard">
                     <LayoutDashboard className="h-4 w-4" />
                     <span>Open Dashboard</span>
@@ -85,13 +85,13 @@ export default async function Home() {
                 </Button>
               ) : (
                 <>
-                  <Button asChild size="lg" className="w-full sm:w-auto h-12 px-8 text-base gap-2 font-semibold shadow-sm">
+                  <Button asChild size="lg" className="w-full sm:w-auto h-11 sm:h-12 px-7 text-sm sm:text-base gap-2 font-semibold shadow-xs">
                     <Link href="/auth/sign-up">
                       <span>Get started</span>
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 text-base font-semibold">
+                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto h-11 sm:h-12 px-7 text-sm sm:text-base font-semibold bg-card/80">
                     <Link href="/auth/login">
                       Sign in
                     </Link>
@@ -102,7 +102,7 @@ export default async function Home() {
           </div>
 
           {/* Authentic interactive product preview with generous top margin */}
-          <div className="mt-14 sm:mt-20 lg:mt-24">
+          <div className="mt-10 sm:mt-14 lg:mt-16">
             <HeroProductPreview />
           </div>
         </div>

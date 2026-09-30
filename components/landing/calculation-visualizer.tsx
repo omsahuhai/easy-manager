@@ -13,18 +13,18 @@ export function CalculationVisualizer() {
   const profit = litresSold * margin;
 
   return (
-    <section id="calculations" className="py-16 sm:py-24 border-t border-border/60 bg-muted/20">
+    <section id="calculations" className="py-12 sm:py-20 border-t border-border/70 relative">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
             From meter readings to money.
           </h2>
-          <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">
-            The numbers calculate themselves the moment you enter closing readings.
+          <p className="mt-2.5 sm:mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed">
+            The moment you type the closing reading, your fuel sales and commission calculate automatically.
           </p>
 
-          {/* Quick Fuel Toggle */}
-          <div className="mt-6 inline-flex rounded-lg border border-border bg-card p-1 shadow-2xs">
+          {/* Clean Fuel Switcher */}
+          <div className="mt-5 inline-flex rounded-lg border border-border/80 bg-card p-1 shadow-2xs">
             <button
               type="button"
               id="calc-fuel-ms"
@@ -38,7 +38,7 @@ export function CalculationVisualizer() {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              MS (Petrol)
+              Petrol (MS)
             </button>
             <button
               type="button"
@@ -53,81 +53,81 @@ export function CalculationVisualizer() {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              HSD (Diesel)
+              Diesel (HSD)
             </button>
           </div>
         </div>
 
-        {/* 4-Step Interactive Calculation Cascade */}
-        <div className="mt-10 max-w-5xl mx-auto">
-          <div className="rounded-xl border border-border/80 bg-card p-4 sm:p-7 shadow-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-center">
-              {/* Step 1: Meter Reading */}
-              <div className="space-y-1">
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                  01 · Reading
-                </span>
-                <div className="text-xl sm:text-2xl font-bold font-mono text-foreground">
-                  {fuel === "MS" ? "129,620.80" : "85,658.30"}
-                </div>
-                <p className="text-xs text-muted-foreground">Closing meter on nozzle</p>
+        {/* Clean 4-Metric Grid — No nested cards, dominant numbers */}
+        <div className="mt-8 sm:mt-10 max-w-4xl mx-auto rounded-2xl border border-border/80 bg-card p-5 sm:p-8 shadow-xs">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {/* Metric 1 */}
+            <div className="space-y-1">
+              <span className="text-xs font-medium text-muted-foreground block">
+                Closing Reading
+              </span>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-foreground tracking-tight">
+                {fuel === "MS" ? "129,620.80" : "85,658.30"}
               </div>
-
-              {/* Step 2: Litres */}
-              <div className="space-y-1 relative">
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                  02 · Net Litres
-                </span>
-                <div className="text-xl sm:text-2xl font-bold font-mono text-foreground">
-                  {litresSold.toFixed(2)} L
-                </div>
-                <p className="text-xs text-muted-foreground">After 5L testing measure</p>
-              </div>
-
-              {/* Step 3: Sales */}
-              <div className="space-y-1 relative">
-                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                  03 · Fuel Sales
-                </span>
-                <div className="text-xl sm:text-2xl font-bold font-mono text-foreground">
-                  ₹{sales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <p className="text-xs text-muted-foreground">At ₹{rate.toFixed(2)}/L rate</p>
-              </div>
-
-              {/* Step 4: RO Profit */}
-              <div className="space-y-1">
-                <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
-                  04 · RO Profit
-                </span>
-                <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                  ₹{profit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <p className="text-xs text-muted-foreground">At ₹{margin.toFixed(2)}/L commission</p>
-              </div>
+              <p className="text-[11px] text-muted-foreground">Meter on pump</p>
             </div>
 
-            {/* Slider to interactively adjust volume */}
-            <div className="mt-8 pt-5 border-t border-border/60 space-y-2">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <label htmlFor="calc-volume-slider" className="cursor-pointer">
-                  Drag slider to simulate dispensed litres:
-                </label>
-                <span className="font-mono font-semibold text-foreground">{litresSold.toFixed(0)} L</span>
+            {/* Metric 2 */}
+            <div className="space-y-1">
+              <span className="text-xs font-medium text-muted-foreground block">
+                Litres Sold
+              </span>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-foreground tracking-tight">
+                {litresSold.toFixed(2)} L
               </div>
-              <input
-                id="calc-volume-slider"
-                name="volumeSlider"
-                type="range"
-                min="200"
-                max="3000"
-                step="50"
-                value={litresSold}
-                aria-label="Dispensed volume in litres"
-                onChange={(e) => setLitresSold(parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-              />
+              <p className="text-[11px] text-muted-foreground">After 5L morning test</p>
             </div>
+
+            {/* Metric 3 */}
+            <div className="space-y-1">
+              <span className="text-xs font-medium text-muted-foreground block">
+                Today&apos;s Sale
+              </span>
+              <div className="text-xl sm:text-2xl font-bold font-mono text-foreground tracking-tight">
+                ₹{sales.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <p className="text-[11px] text-muted-foreground">Rate: ₹{rate.toFixed(2)}/L</p>
+            </div>
+
+            {/* Metric 4: Primary Outcome */}
+            <div className="space-y-1">
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block">
+                Your Commission
+              </span>
+              <div className="text-xl sm:text-2xl font-extrabold font-mono text-emerald-600 dark:text-emerald-400 tracking-tight">
+                ₹{profit.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <p className="text-[11px] text-muted-foreground">Margin: ₹{margin.toFixed(2)}/L</p>
+            </div>
+          </div>
+
+          {/* Interactive Volume Slider */}
+          <div className="mt-6 pt-5 border-t border-border/60 space-y-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <label htmlFor="calc-volume-slider" className="cursor-pointer font-medium">
+                Try different litres to see profit change:
+              </label>
+              <span className="font-mono font-bold text-foreground bg-muted/60 px-2 py-0.5 rounded border border-border/60">
+                {litresSold.toFixed(0)} L
+              </span>
+            </div>
+            <input
+              id="calc-volume-slider"
+              name="volumeSlider"
+              type="range"
+              min="200"
+              max="3000"
+              step="50"
+              value={litresSold}
+              aria-label="Dispensed volume in litres"
+              onChange={(e) => setLitresSold(parseFloat(e.target.value))}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary mt-1"
+            />
           </div>
         </div>
       </div>

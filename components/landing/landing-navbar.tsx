@@ -119,7 +119,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background p-1 text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card p-1 text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary shadow-2xs"
             aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={mobileMenuOpen}
           >
@@ -130,7 +130,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="border-b border-border bg-background/98 px-4 pt-2 pb-6 backdrop-blur-lg lg:hidden animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="border-b border-border/80 bg-card px-4 pt-3 pb-6 shadow-xl shadow-black/10 lg:hidden animate-in fade-in slide-in-from-top-2 duration-150">
           <div className="space-y-1">
             {navLinks.map((link) => (
               <Link
@@ -144,7 +144,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
             ))}
           </div>
 
-          <div className="mt-4 pt-4 border-t border-border space-y-2">
+          <div className="mt-4 pt-4 border-t border-border/70 space-y-2">
             {user ? (
               <Button asChild className="w-full justify-center gap-2 shadow-xs">
                 <Link href="/protected/dashboard" onClick={() => setMobileMenuOpen(false)}>
@@ -154,7 +154,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
               </Button>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <Button asChild variant="outline" className="w-full justify-center">
+                <Button asChild variant="outline" className="w-full justify-center bg-card">
                   <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
                     Sign in
                   </Link>

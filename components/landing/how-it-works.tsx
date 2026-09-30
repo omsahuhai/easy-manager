@@ -2,52 +2,75 @@ export function HowItWorks() {
   const steps = [
     {
       num: "01",
-      title: "Readings",
-      desc: "Enter nozzle closing meters at shift wrap.",
+      title: "Closing Readings",
+      desc: "Enter nozzle meter values at the end of each shift.",
     },
     {
       num: "02",
-      title: "Rates",
-      desc: "Keep daily selling prices and dealer margins current.",
+      title: "Fuel Prices",
+      desc: "Keep daily selling prices and your margin current.",
     },
     {
       num: "03",
-      title: "Calculations",
-      desc: "Volume, sales, and gross margin calculate on save.",
+      title: "Instant Totals",
+      desc: "Litres sold, total sales, and margin calculate automatically.",
     },
     {
       num: "04",
-      title: "Expenses",
-      desc: "Record generator fuel, power, and attendant wages.",
+      title: "Station Expenses",
+      desc: "Log electricity bills, generator fuel, and staff wages.",
     },
     {
       num: "05",
-      title: "Reports",
-      desc: "Inspect consolidated sales and net profit statements.",
+      title: "Monthly Profit",
+      desc: "View clear summaries of total sales and take-home profit.",
     },
   ];
 
   return (
-    <section className="py-16 sm:py-24 border-t border-border/60 bg-muted/20">
+    <section className="py-12 sm:py-20 border-t border-border/70 bg-muted/30 relative">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground">
             Simple daily routine.
           </h2>
-          <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-2.5 sm:mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl mx-auto">
             Five minutes at shift close replaces hours of manual paperwork.
           </p>
         </div>
 
-        {/* Clean 5-Step Flow Line */}
-        <div className="mt-12 max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* Clean Step Flow: Compact horizontal cards on mobile, 5-col grid on desktop */}
+        <div className="mt-8 sm:mt-10 max-w-5xl mx-auto">
+          {/* Mobile view: Compact list */}
+          <div className="sm:hidden space-y-2.5">
             {steps.map((step) => (
               <div
                 key={step.num}
-                className="rounded-lg border border-border bg-card p-4 space-y-1.5"
+                className="flex items-start gap-3 p-3.5 rounded-xl border border-border/80 bg-card shadow-2xs"
               >
-                <span className="text-xs font-mono font-bold text-primary block">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-mono text-xs font-bold">
+                  {step.num}
+                </div>
+                <div className="space-y-0.5 pt-0.5">
+                  <h3 className="text-xs font-bold text-foreground">
+                    {step.title}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    {step.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop & Tablet grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {steps.map((step) => (
+              <div
+                key={step.num}
+                className="rounded-xl border border-border/80 bg-card p-4 space-y-2 shadow-2xs"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-xs font-mono font-bold text-primary">
                   {step.num}
                 </span>
                 <h3 className="text-sm font-bold text-foreground">

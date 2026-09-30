@@ -4,13 +4,13 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border/60 bg-card">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+    <footer className="border-t border-border/80 bg-card">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand Col */}
-          <div className="col-span-2 space-y-4">
+          <div className="col-span-1 sm:col-span-2 space-y-3.5">
             <Link href="/" className="flex items-center gap-2.5 font-semibold text-base">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs">
                 <Fuel className="h-4 w-4" />
               </div>
               <div className="flex flex-col">
@@ -23,16 +23,16 @@ export function LandingFooter() {
               </div>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
-              The digital operating register for Indian petrol pump owners. Record daily meter readings, track selling rates and expenses, and derive sales and RO profitability automatically.
+              The digital operating register for Indian petrol pump owners. Record daily meter readings, track selling rates and expenses, and derive sales and profits automatically.
             </p>
-            <div className="pt-2 text-[11px] text-muted-foreground">
+            <div className="pt-1 text-[11px] text-muted-foreground">
               Built for retail outlets of IOCL, BPCL, HPCL & independent operators.
             </div>
           </div>
 
           {/* Product Col */}
           <div className="space-y-3">
-            <p className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+            <p className="text-xs font-bold uppercase tracking-wider text-foreground">
               Product
             </p>
             <ul className="space-y-2 text-xs text-muted-foreground">
@@ -48,7 +48,7 @@ export function LandingFooter() {
               </li>
               <li>
                 <Link href="#calculations" className="hover:text-foreground transition-colors">
-                  Calculation Engine
+                  Daily Calculations
                 </Link>
               </li>
               <li>
@@ -124,12 +124,12 @@ export function LandingFooter() {
         </div>
 
         {/* Subfooter */}
-        <div className="mt-12 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        <div className="mt-10 pt-6 border-t border-border/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground text-center sm:text-left">
           <div className="flex items-center gap-2">
             <span>© 2026 Easy Manager. All rights reserved.</span>
           </div>
           <div className="flex items-center gap-4">
-            <span>Designed for Indian Standard Time (Asia/Kolkata)</span>
+            <span className="text-[11px]">Designed for Indian Standard Time (Asia/Kolkata)</span>
             <ThemeSwitcher />
           </div>
         </div>
