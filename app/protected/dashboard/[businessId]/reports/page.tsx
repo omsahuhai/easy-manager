@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById } from "@/lib/queries/businesses";
 import { getMonthlyProfitReports } from "@/lib/queries/reports";
 import { notFound, redirect } from "next/navigation";
@@ -14,10 +14,7 @@ export default async function MonthlyReportsPage(props: {
   const params = await props.params;
   const businessId = params.businessId;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
 
   if (!user) {
     redirect("/auth/login");

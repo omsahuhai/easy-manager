@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById } from "@/lib/queries/businesses";
 import { getReadingsWithContinuity, getLatestPreviousClosings } from "@/lib/queries/readings";
 import { notFound, redirect } from "next/navigation";
@@ -14,10 +14,7 @@ export default async function DailyReadingsPage(props: {
   const params = await props.params;
   const businessId = params.businessId;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
 
   if (!user) {
     redirect("/auth/login");

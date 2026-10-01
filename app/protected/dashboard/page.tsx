@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getBusinessesForUser } from "@/lib/queries/businesses";
@@ -9,10 +9,7 @@ import { Button } from "@/components/ui/button";
 export const instant = false;
 
 export default async function DashboardRoot() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
 
   if (!user) {
     redirect("/auth/login");

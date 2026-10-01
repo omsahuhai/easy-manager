@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ActionResult, FuelType } from "@/lib/types";
 import { formatDateIST, isFutureDateIST } from "@/lib/date";
 import { getPreviousClosingForDate } from "@/lib/queries/readings";
+import { verifyBusinessOwnership } from "@/lib/queries/businesses";
 
 const createReadingSchema = z.object({
   business_id: z.string().uuid("Invalid business identifier"),
@@ -80,6 +81,15 @@ export async function createReadingAction(
     const { business_id, fuel_type, reading_date, opening_reading, closing_reading } =
       parsed.data;
 
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     // Reject future dates based on Asia/Kolkata
     if (isFutureDateIST(reading_date)) {
       return {
@@ -141,6 +151,7 @@ export async function createReadingAction(
 
     revalidatePath(`/protected/dashboard/${business_id}`);
     revalidatePath(`/protected/dashboard/${business_id}/readings`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,
@@ -197,6 +208,15 @@ export async function updateReadingAction(
 
     const { reading_id, business_id, opening_reading, closing_reading } = parsed.data;
 
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     // Invariant: closing_reading >= opening_reading
     if (closing_reading < opening_reading) {
       return {
@@ -234,6 +254,7 @@ export async function updateReadingAction(
 
     revalidatePath(`/protected/dashboard/${business_id}`);
     revalidatePath(`/protected/dashboard/${business_id}/readings`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,
@@ -247,6 +268,91 @@ export async function updateReadingAction(
   }
 }
 
+const deleteReadingSchema = z.object({
+  reading_id: z.string().uuid("Invalid reading identifier"),
+  business_id: z.string().uuid("Invalid business identifier"),
+});
+
+export async function deleteReadingAction(
+  _prevState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: "You must be logged in to delete meter readings.",
+      };
+    }
+
+    const parsed = deleteReadingSchema.safeParse({
+      reading_id: formData.get("reading_id"),
+      business_id: formData.get("business_id"),
+    });
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: "Invalid request data.",
+      };
+    }
+
+    const { reading_id, business_id } = parsed.data;
+
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
+    const { error } = await supabase
+      .from("daily_meter_readings")
+      .delete()
+      .eq("id", reading_id)
+      .eq("business_id", business_id);
+
+    if (error) {
+      console.error("Failed to delete daily meter reading:", error.message);
+      return {
+        success: false,
+        error: "Failed to delete meter reading. Please try again.",
+      };
+    }
+
+    revalidatePath(`/protected/dashboard/${business_id}`);
+    revalidatePath(`/protected/dashboard/${business_id}/readings`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
+
+    return {
+      success: true,
+    };
+  } catch (err) {
+    console.error("Unexpected error in deleteReadingAction:", err);
+    return {
+      success: false,
+      error: "An unexpected error occurred while deleting the meter reading.",
+    };
+  }
+}
+
+const fetchPreviousClosingSchema = z.object({
+  business_id: z.string().uuid("Invalid business identifier"),
+  fuel_type: z.enum(["MS", "HSD"], {
+    message: "Fuel type must be either MS (Petrol) or HSD (Diesel)",
+  }),
+  reading_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Reading date must be in YYYY-MM-DD format"),
+});
+
 /**
  * Server action helper callable from client when date/fuel changes in form
  * to lookup previous closing reading for auto-prefilling.
@@ -256,5 +362,19 @@ export async function fetchPreviousClosingAction(
   fuelType: FuelType,
   readingDate: string
 ) {
-  return await getPreviousClosingForDate(businessId, fuelType, readingDate);
+  const parsed = fetchPreviousClosingSchema.safeParse({
+    business_id: businessId,
+    fuel_type: fuelType,
+    reading_date: readingDate,
+  });
+
+  if (!parsed.success) {
+    return { previousClosing: null, previousDate: null, isFirstReading: true };
+  }
+
+  return await getPreviousClosingForDate(
+    parsed.data.business_id,
+    parsed.data.fuel_type,
+    parsed.data.reading_date
+  );
 }

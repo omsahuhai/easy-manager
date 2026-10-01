@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ActionResult } from "@/lib/types";
+import { verifyBusinessOwnership } from "@/lib/queries/businesses";
 
 const createExpenseSchema = z.object({
   business_id: z.string().uuid("Invalid business identifier"),
@@ -89,6 +90,15 @@ export async function createExpenseAction(
 
     const { business_id, expense_month, category, amount, note } = parsed.data;
 
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     const { data, error } = await supabase
       .from("expenses")
       .insert({
@@ -118,6 +128,7 @@ export async function createExpenseAction(
 
     revalidatePath(`/protected/dashboard/${business_id}`);
     revalidatePath(`/protected/dashboard/${business_id}/expenses`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,
@@ -178,6 +189,15 @@ export async function updateExpenseAction(
     const { expense_id, business_id, expense_month, category, amount, note } =
       parsed.data;
 
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     const { error } = await supabase
       .from("expenses")
       .update({
@@ -206,6 +226,7 @@ export async function updateExpenseAction(
 
     revalidatePath(`/protected/dashboard/${business_id}`);
     revalidatePath(`/protected/dashboard/${business_id}/expenses`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,
@@ -218,6 +239,11 @@ export async function updateExpenseAction(
     };
   }
 }
+
+const deleteExpenseSchema = z.object({
+  expense_id: z.string().uuid("Invalid expense identifier"),
+  business_id: z.string().uuid("Invalid business identifier"),
+});
 
 export async function deleteExpenseAction(
   _prevState: ActionResult | null,
@@ -236,21 +262,34 @@ export async function deleteExpenseAction(
       };
     }
 
-    const expenseId = formData.get("expense_id") as string;
-    const businessId = formData.get("business_id") as string;
+    const parsed = deleteExpenseSchema.safeParse({
+      expense_id: formData.get("expense_id"),
+      business_id: formData.get("business_id"),
+    });
 
-    if (!expenseId || !businessId) {
+    if (!parsed.success) {
       return {
         success: false,
         error: "Invalid request data.",
       };
     }
 
+    const { expense_id, business_id } = parsed.data;
+
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     const { error } = await supabase
       .from("expenses")
       .delete()
-      .eq("id", expenseId)
-      .eq("business_id", businessId);
+      .eq("id", expense_id)
+      .eq("business_id", business_id);
 
     if (error) {
       console.error("Failed to delete expense:", error.message);
@@ -260,8 +299,9 @@ export async function deleteExpenseAction(
       };
     }
 
-    revalidatePath(`/protected/dashboard/${businessId}`);
-    revalidatePath(`/protected/dashboard/${businessId}/expenses`);
+    revalidatePath(`/protected/dashboard/${business_id}`);
+    revalidatePath(`/protected/dashboard/${business_id}/expenses`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,

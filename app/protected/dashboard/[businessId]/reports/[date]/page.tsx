@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Droplet, IndianRupee, ReceiptText, TrendingUp, AlertTriangle } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById } from "@/lib/queries/businesses";
 import { getDailyReportForDate } from "@/lib/queries/daily-reports";
 import { formatDateIST } from "@/lib/date";
@@ -15,8 +15,7 @@ export default async function DailyReportPage(props: {
   params: Promise<{ businessId: string; date: string }>;
 }) {
   const { businessId, date } = await props.params;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
   if (!user) redirect("/auth/login");
 
   const [business, records] = await Promise.all([

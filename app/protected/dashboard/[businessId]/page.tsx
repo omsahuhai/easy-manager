@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById } from "@/lib/queries/businesses";
-import { getReadingsWithContinuity } from "@/lib/queries/readings";
+import { getDashboardReadingSummary } from "@/lib/queries/readings";
 import { getMonthlyProfitForMonth } from "@/lib/queries/reports";
 import { getTodayIST, getCurrentMonthIST, formatMonthIST, formatDateIST } from "@/lib/date";
 import { notFound, redirect } from "next/navigation";
@@ -28,10 +28,7 @@ export default async function BusinessDashboard(props: {
   const params = await props.params;
   const businessId = params.businessId;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
 
   if (!user) {
     redirect("/auth/login");
@@ -41,12 +38,13 @@ export default async function BusinessDashboard(props: {
   const currentMonthIST = getCurrentMonthIST();
   const currentMonthLabel = formatMonthIST(currentMonthIST);
 
-  // Fetch business state plus the complete register so Overview can fall back
-  // to the latest recorded operational date without displaying false zeros.
+  // Fetch business state plus recent readings for dashboard overview.
+  // getDashboardReadingSummary only fetches the last ~30 days instead of
+  // the entire history, keeping dashboard loads fast as data grows.
   const [business, currentMonthProfit, recentReadings] = await Promise.all([
     getBusinessById(businessId),
     getMonthlyProfitForMonth(businessId, currentMonthIST),
-    getReadingsWithContinuity(businessId),
+    getDashboardReadingSummary(businessId),
   ]);
 
   if (!business) {

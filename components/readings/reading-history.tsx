@@ -7,20 +7,34 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EditReadingDialog } from "@/components/readings/edit-reading-dialog";
-import { History, Pencil, AlertTriangle, AlertCircle, Droplet, Gauge } from "lucide-react";
+import { DeleteReadingDialog } from "@/components/readings/delete-reading-dialog";
+import { History, Pencil, Trash2, AlertTriangle, AlertCircle, Droplet, Gauge } from "lucide-react";
 
 interface ReadingHistoryProps {
   businessId: string;
   readings: ReadingWithContinuity[];
 }
 
+const PAGE_SIZE = 25;
+
 export function ReadingHistory({ businessId, readings }: ReadingHistoryProps) {
   const [selectedReading, setSelectedReading] = useState<ReadingWithContinuity | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(readings.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedReadings = readings.slice(startIndex, startIndex + PAGE_SIZE);
 
   const handleEdit = (reading: ReadingWithContinuity) => {
     setSelectedReading(reading);
     setEditOpen(true);
+  };
+
+  const handleDelete = (reading: ReadingWithContinuity) => {
+    setSelectedReading(reading);
+    setDeleteOpen(true);
   };
 
   if (readings.length === 0) {
@@ -66,7 +80,7 @@ export function ReadingHistory({ businessId, readings }: ReadingHistoryProps) {
         <CardContent className="p-0 sm:p-6 sm:pt-0">
           {/* Mobile Card List (< 640px) */}
           <div className="divide-y sm:hidden">
-            {readings.map((reading) => (
+            {paginatedReadings.map((reading) => (
               <div key={reading.reading_id} className="p-4 space-y-3">
                 {/* Header: Date + Fuel + Status */}
                 <div className="flex items-center justify-between">
@@ -89,15 +103,25 @@ export function ReadingHistory({ businessId, readings }: ReadingHistoryProps) {
                       </Badge>
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(reading)}
-                    className="h-8 px-2 text-xs"
-                  >
-                    <Pencil className="h-3.5 w-3.5 mr-1" />
-                    Edit
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(reading)}
+                      className="h-8 px-2 text-xs"
+                    >
+                      <Pencil className="h-3.5 w-3.5 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(reading)}
+                      className="h-8 px-2 text-xs text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Continuity Warning Banner if Mismatch */}
@@ -172,7 +196,7 @@ export function ReadingHistory({ businessId, readings }: ReadingHistoryProps) {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {readings.map((reading) => (
+                {paginatedReadings.map((reading) => (
                   <tr
                     key={reading.reading_id}
                     className={`hover:bg-muted/30 transition-colors ${
@@ -233,21 +257,63 @@ export function ReadingHistory({ businessId, readings }: ReadingHistoryProps) {
                       {reading.profit !== null ? `₹${reading.profit.toFixed(2)}` : <span className="text-muted-foreground">—</span>}
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(reading)}
-                        className="h-8 px-2 text-xs"
-                      >
-                        <Pencil className="h-3.5 w-3.5 mr-1" />
-                        Edit
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(reading)}
+                          className="h-8 px-2 text-xs"
+                        >
+                          <Pencil className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(reading)}
+                          className="h-8 px-2 text-xs text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20 text-xs mt-0">
+              <span className="text-muted-foreground">
+                Showing {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, readings.length)} of {readings.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  className="h-8 px-2.5 text-xs"
+                >
+                  Previous
+                </Button>
+                <span className="text-muted-foreground font-medium px-1">
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  className="h-8 px-2.5 text-xs"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -256,6 +322,13 @@ export function ReadingHistory({ businessId, readings }: ReadingHistoryProps) {
         reading={selectedReading}
         open={editOpen}
         onOpenChange={setEditOpen}
+      />
+
+      <DeleteReadingDialog
+        businessId={businessId}
+        reading={selectedReading}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { DailySalesRecord } from "@/lib/types";
 
 const SELECT = "reading_id, business_id, fuel_type, reading_date, opening_reading, closing_reading, created_at, updated_at, litres, rate, margin, rate_missing, sales, profit";
@@ -18,8 +18,7 @@ function normalize(records: DailySalesRecord[]): DailySalesRecord[] {
 }
 
 export async function getDailyReportsForMonth(businessId: string, month: string): Promise<DailySalesRecord[]> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
   if (!user) return [];
 
   const start = `${month.slice(0, 7)}-01`;
@@ -41,8 +40,7 @@ export async function getDailyReportsForMonth(businessId: string, month: string)
 }
 
 export async function getDailyReportForDate(businessId: string, date: string): Promise<DailySalesRecord[]> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
   if (!user) return [];
 
   const { data, error } = await supabase

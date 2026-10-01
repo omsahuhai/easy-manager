@@ -1,12 +1,14 @@
-import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { Business } from "@/lib/types";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Fetches all businesses owned by the current authenticated user.
+ * Wrapped in React.cache() to deduplicate calls within a single request.
  */
-export async function getBusinessesForUser(): Promise<Business[]> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export const getBusinessesForUser = cache(async (): Promise<Business[]> => {
+  const { supabase, user } = await getAuthUser();
 
   if (!user) {
     return [];
@@ -24,15 +26,15 @@ export async function getBusinessesForUser(): Promise<Business[]> {
   }
 
   return (data as Business[]) || [];
-}
+});
 
 /**
  * Fetches a single business by ID for the current authenticated user.
  * Returns null if not found or if the user is not authorized.
+ * Wrapped in React.cache() to eliminate duplicate queries between layout and page.
  */
-export async function getBusinessById(businessId: string): Promise<Business | null> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export const getBusinessById = cache(async (businessId: string): Promise<Business | null> => {
+  const { supabase, user } = await getAuthUser();
 
   if (!user) {
     return null;
@@ -50,4 +52,25 @@ export async function getBusinessById(businessId: string): Promise<Business | nu
   }
 
   return data as Business;
+});
+
+/**
+ * Lightweight ownership check for use in Server Actions.
+ * Takes an existing Supabase client (to avoid creating a second one)
+ * and verifies that the given business_id belongs to the given user.
+ * Returns true if the user owns the business, false otherwise.
+ */
+export async function verifyBusinessOwnership(
+  supabase: SupabaseClient,
+  businessId: string,
+  userId: string
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("businesses")
+    .select("id")
+    .eq("id", businessId)
+    .eq("owner_id", userId)
+    .maybeSingle();
+
+  return !error && data !== null;
 }

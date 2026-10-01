@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EditRateDialog } from "@/components/rates/edit-rate-dialog";
-import { History, Pencil, Calendar, IndianRupee } from "lucide-react";
+import { DeleteRateDialog } from "@/components/rates/delete-rate-dialog";
+import { History, Pencil, Trash2, Calendar, IndianRupee } from "lucide-react";
 
 interface RateHistoryProps {
   businessId: string;
@@ -17,10 +18,16 @@ interface RateHistoryProps {
 export function RateHistory({ businessId, rates }: RateHistoryProps) {
   const [selectedRate, setSelectedRate] = useState<EnrichedFuelRate | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleEdit = (rate: EnrichedFuelRate) => {
     setSelectedRate(rate);
     setEditOpen(true);
+  };
+
+  const handleDelete = (rate: EnrichedFuelRate) => {
+    setSelectedRate(rate);
+    setDeleteOpen(true);
   };
 
   if (rates.length === 0) {
@@ -95,15 +102,25 @@ export function RateHistory({ businessId, rates }: RateHistoryProps) {
                       </Badge>
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(rate)}
-                    className="h-8 px-2 text-xs"
-                  >
-                    <Pencil className="h-3.5 w-3.5 mr-1" />
-                    Edit
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(rate)}
+                      className="h-8 px-2 text-xs"
+                    >
+                      <Pencil className="h-3.5 w-3.5 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(rate)}
+                      className="h-8 px-2 text-xs text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
@@ -190,15 +207,25 @@ export function RateHistory({ businessId, rates }: RateHistoryProps) {
                       )}
                     </td>
                     <td className="px-4 py-3.5 whitespace-nowrap text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(rate)}
-                        className="h-8 px-2.5 text-xs"
-                      >
-                        <Pencil className="h-3.5 w-3.5 mr-1" />
-                        Edit
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(rate)}
+                          className="h-8 px-2.5 text-xs"
+                        >
+                          <Pencil className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(rate)}
+                          className="h-8 px-2.5 text-xs text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -213,6 +240,13 @@ export function RateHistory({ businessId, rates }: RateHistoryProps) {
         rate={selectedRate}
         open={editOpen}
         onOpenChange={setEditOpen}
+      />
+
+      <DeleteRateDialog
+        businessId={businessId}
+        rate={selectedRate}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
       />
     </>
   );

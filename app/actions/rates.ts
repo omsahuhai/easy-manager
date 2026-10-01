@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ActionResult } from "@/lib/types";
 import { formatDateIST } from "@/lib/date";
+import { verifyBusinessOwnership } from "@/lib/queries/businesses";
 
 const createRateSchema = z.object({
   business_id: z.string().uuid("Invalid business identifier"),
@@ -78,6 +79,15 @@ export async function createFuelRateAction(
 
     const { business_id, fuel_type, effective_date, rate, margin } = parsed.data;
 
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     const { data, error } = await supabase
       .from("fuel_rates")
       .insert({
@@ -109,6 +119,7 @@ export async function createFuelRateAction(
 
     revalidatePath(`/protected/dashboard/${business_id}`);
     revalidatePath(`/protected/dashboard/${business_id}/rates`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,
@@ -165,6 +176,15 @@ export async function updateFuelRateAction(
 
     const { rate_id, business_id, rate, margin } = parsed.data;
 
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     const { error } = await supabase
       .from("fuel_rates")
       .update({
@@ -184,6 +204,7 @@ export async function updateFuelRateAction(
 
     revalidatePath(`/protected/dashboard/${business_id}`);
     revalidatePath(`/protected/dashboard/${business_id}/rates`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,
@@ -196,6 +217,10 @@ export async function updateFuelRateAction(
     };
   }
 }
+const deleteRateSchema = z.object({
+  rate_id: z.string().uuid("Invalid rate identifier"),
+  business_id: z.string().uuid("Invalid business identifier"),
+});
 
 export async function deleteFuelRateAction(
   _prevState: ActionResult | null,
@@ -214,21 +239,34 @@ export async function deleteFuelRateAction(
       };
     }
 
-    const rateId = formData.get("rate_id") as string;
-    const businessId = formData.get("business_id") as string;
+    const parsed = deleteRateSchema.safeParse({
+      rate_id: formData.get("rate_id"),
+      business_id: formData.get("business_id"),
+    });
 
-    if (!rateId || !businessId) {
+    if (!parsed.success) {
       return {
         success: false,
         error: "Invalid request data.",
       };
     }
 
+    const { rate_id, business_id } = parsed.data;
+
+    // Verify the user owns this business before mutating
+    const isOwner = await verifyBusinessOwnership(supabase, business_id, user.id);
+    if (!isOwner) {
+      return {
+        success: false,
+        error: "Business not found or you do not have access.",
+      };
+    }
+
     const { error } = await supabase
       .from("fuel_rates")
       .delete()
-      .eq("id", rateId)
-      .eq("business_id", businessId);
+      .eq("id", rate_id)
+      .eq("business_id", business_id);
 
     if (error) {
       console.error("Failed to delete fuel rate:", error.message);
@@ -238,8 +276,9 @@ export async function deleteFuelRateAction(
       };
     }
 
-    revalidatePath(`/protected/dashboard/${businessId}`);
-    revalidatePath(`/protected/dashboard/${businessId}/rates`);
+    revalidatePath(`/protected/dashboard/${business_id}`);
+    revalidatePath(`/protected/dashboard/${business_id}/rates`);
+    revalidatePath(`/protected/dashboard/${business_id}/reports`);
 
     return {
       success: true,

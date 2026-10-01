@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { FuelRate, FuelType } from "@/lib/types";
 import { getTodayIST } from "@/lib/date";
 
@@ -13,10 +13,7 @@ export interface EnrichedFuelRate extends FuelRate {
 export async function getFuelRatesForBusiness(
   businessId: string
 ): Promise<EnrichedFuelRate[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) {
     return [];

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { DailySalesRecord, MonthlyProfitRecord } from "@/lib/types";
 
 /**
@@ -8,10 +8,7 @@ import { DailySalesRecord, MonthlyProfitRecord } from "@/lib/types";
 export async function getMonthlyProfitReports(
   businessId: string
 ): Promise<MonthlyProfitRecord[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) return [];
 
@@ -34,10 +31,7 @@ export async function getMonthlyProfitForMonth(
   businessId: string,
   month: string
 ): Promise<MonthlyProfitRecord | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) return null;
 
@@ -81,10 +75,7 @@ export async function getTodayPerformance(
   businessId: string,
   todayIST: string
 ): Promise<TodayPerformanceSummary> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) {
     return { msReading: null, hsdReading: null, totalLitres: 0, totalSales: null, totalROProfit: null, hasRateMissing: false, hasReadings: false };

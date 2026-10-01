@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById, getBusinessesForUser } from "@/lib/queries/businesses";
 import { BusinessSwitcher } from "@/components/dashboard/business-switcher";
 import { WorkspaceNav } from "@/components/dashboard/workspace-nav";
@@ -13,10 +13,7 @@ export default async function BusinessWorkspaceLayout(props: {
   const params = await props.params;
   const businessId = params.businessId;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
 
   if (!user) {
     redirect("/auth/login");

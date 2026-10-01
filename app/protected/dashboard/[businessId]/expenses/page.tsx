@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById } from "@/lib/queries/businesses";
 import { getExpensesForMonth, getDistinctExpenseMonths } from "@/lib/queries/expenses";
 import { notFound, redirect } from "next/navigation";
@@ -18,10 +18,7 @@ export default async function ExpensesPage(props: {
 
   const businessId = params.businessId;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
 
   if (!user) {
     redirect("/auth/login");

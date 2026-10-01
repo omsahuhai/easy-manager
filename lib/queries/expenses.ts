@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { Expense } from "@/lib/types";
 
 /**
@@ -9,10 +9,7 @@ export async function getExpensesForMonth(
   businessId: string,
   expenseMonth: string
 ): Promise<Expense[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) {
     return [];
@@ -38,32 +35,48 @@ export async function getExpensesForMonth(
 
 /**
  * Fetches the list of all distinct months (YYYY-MM-01) for which expenses have been recorded.
+ * Uses a database function (SELECT DISTINCT) to avoid fetching all expense rows.
  */
 export async function getDistinctExpenseMonths(
   businessId: string
 ): Promise<string[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getAuthUser();
 
   if (!user) {
     return [];
   }
 
-  const { data, error } = await supabase
-    .from("expenses")
-    .select("expense_month")
-    .eq("business_id", businessId)
-    .order("expense_month", { ascending: false });
+  // Use the database function for efficient DISTINCT query
+  const { data, error } = await supabase.rpc("get_distinct_expense_months", {
+    p_business_id: businessId,
+  });
 
-  if (error || !data) {
+  if (error) {
+    // Fallback: if the RPC function isn't deployed yet, use the old approach
+    console.warn(
+      "get_distinct_expense_months RPC failed, falling back to client-side dedup:",
+      error.message
+    );
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from("expenses")
+      .select("expense_month")
+      .eq("business_id", businessId)
+      .order("expense_month", { ascending: false });
+
+    if (fallbackError || !fallbackData) {
+      return [];
+    }
+
+    return Array.from(
+      new Set(fallbackData.map((item) => item.expense_month as string))
+    );
+  }
+
+  if (!data) {
     return [];
   }
 
-  const uniqueMonths = Array.from(
-    new Set(data.map((item) => item.expense_month as string))
+  return (data as Array<{ expense_month: string }>).map(
+    (item) => item.expense_month
   );
-
-  return uniqueMonths;
 }

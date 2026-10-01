@@ -9,7 +9,7 @@ import {
   ReceiptText,
   TrendingUp,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import { getBusinessById } from "@/lib/queries/businesses";
 import { getMonthlyProfitForMonth } from "@/lib/queries/reports";
 import { getDailyReportsForMonth } from "@/lib/queries/daily-reports";
@@ -43,8 +43,7 @@ export default async function MonthlyReportDetailPage(props: {
 
   if (!/^\d{4}-\d{2}$/.test(month)) notFound();
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user } = await getAuthUser();
   if (!user) redirect("/auth/login");
 
   const [business, summary, dailyRecords] = await Promise.all([
