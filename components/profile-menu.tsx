@@ -11,7 +11,7 @@ function getInitials(fullName: string | null, email: string) {
   return source.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
 }
 
-export function ProfileMenu({ userId, email, fullName, avatarUrl }: { userId: string; email: string; fullName: string | null; avatarUrl: string | null }) {
+export function ProfileMenu({ email, fullName, avatarUrl }: { email: string; fullName: string | null; avatarUrl: string | null }) {
   const router = useRouter();
   const initials = getInitials(fullName, email);
 
