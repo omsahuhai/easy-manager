@@ -26,7 +26,6 @@ export default async function ProfilePage() {
         emailConfirmed={Boolean(user.email_confirmed_at)}
         fullName={profile?.full_name ?? ""}
         phone={profile?.phone ?? ""}
-        bio={profile?.bio ?? ""}
         avatarUrl={profile?.avatar_url ?? null}
         avatarPath={profile?.avatar_path ?? null}
       />
