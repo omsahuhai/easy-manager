@@ -2,7 +2,6 @@ alter table public.profiles
   add column if not exists avatar_url text,
   add column if not exists avatar_path text,
   add column if not exists phone text,
-  add column if not exists bio text,
   add column if not exists updated_at timestamptz default now();
 
 update public.profiles set updated_at = coalesce(updated_at, created_at, now()) where updated_at is null;
