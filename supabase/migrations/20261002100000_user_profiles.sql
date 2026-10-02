@@ -57,11 +57,10 @@ values ('avatars', 'avatars', true)
 on conflict (id) do update set public = excluded.public;
 
 -- 5. Storage policies for avatars
--- Public read access so avatars can be viewed by anyone with the URL
+-- Since 'avatars' is a public bucket (public = true), files are served directly
+-- via public URLs (/storage/v1/object/public/...) without checking RLS on storage.objects.
+-- A broad SELECT policy must NOT be used because it allows clients to list all files in the bucket.
 drop policy if exists "Avatar images are publicly accessible" on storage.objects;
-create policy "Avatar images are publicly accessible" on storage.objects
-  for select to public
-  using (bucket_id = 'avatars');
 
 -- Authenticated users can only insert files under their own user folder: <user_id>/<filename>
 drop policy if exists "Users can upload their own avatars" on storage.objects;
