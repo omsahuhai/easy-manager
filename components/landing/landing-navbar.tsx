@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Fuel, Menu, X, ArrowRight, LayoutDashboard, LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
@@ -85,18 +86,21 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
                   <span>Open Dashboard</span>
                 </Link>
               </Button>
-              <form action="/auth/logout" method="post">
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 px-0 text-muted-foreground hover:text-foreground"
-                  title="Sign out"
-                  aria-label="Sign out"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </form>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 px-0 text-muted-foreground hover:text-foreground"
+                title="Sign out"
+                aria-label="Sign out"
+                onClick={async () => {
+                  const supabase = createClient();
+                  await supabase.auth.signOut();
+                  window.location.assign("/");
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
