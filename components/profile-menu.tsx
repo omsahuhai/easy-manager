@@ -43,7 +43,6 @@ export function ProfileMenu({ userId, email, fullName, avatarUrl }: { userId: st
         <DropdownMenuItem asChild><Link href="/auth/update-password"><Settings />Change password</Link></DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={(event) => { event.preventDefault(); void logout(); }} className="text-destructive focus:text-destructive"><LogOut />Logout</DropdownMenuItem>
-        <p className="px-2 pb-1 pt-1 text-[11px] text-muted-foreground">Account ID: {userId.slice(0, 8)}</p>
       </DropdownMenuContent>
     </DropdownMenu>
   );
