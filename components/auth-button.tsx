@@ -29,7 +29,7 @@ export async function AuthButton({ showDashboardLink = true }: AuthButtonProps =
             <Link href="/protected/dashboard"><LayoutDashboard className="h-3.5 w-3.5" /><span>Dashboard</span><ArrowRight className="h-3.5 w-3.5 hidden sm:inline" /></Link>
           </Button>
         )}
-        <ProfileMenu userId={user.id} email={user.email ?? ""} fullName={profile?.full_name ?? null} avatarUrl={profile?.avatar_url ?? null} />
+        <ProfileMenu email={user.email ?? ""} fullName={profile?.full_name ?? null} avatarUrl={profile?.avatar_url ?? null} />
       </div>
     );
   } catch {
