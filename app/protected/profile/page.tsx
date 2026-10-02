@@ -4,8 +4,6 @@ import { getCurrentUserProfile } from "@/lib/queries/profile";
 import { ProfileForm } from "@/components/profile-form";
 import { UserRound } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export default async function ProfilePage() {
   const { user } = await getAuthUser();
   if (!user) redirect("/auth/login");
