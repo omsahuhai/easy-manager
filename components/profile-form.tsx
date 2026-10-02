@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Camera,
   Check,
-  Copy,
   Loader2,
-  Mail,
-  Phone,
-  ShieldAlert,
   Trash2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -17,13 +14,6 @@ import { updateProfileAction, deleteAccountAction } from "@/app/actions/profile"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -36,7 +26,7 @@ import { ImageCropperDialog } from "@/components/image-cropper-dialog";
 import { getCroppedImg } from "@/lib/crop-image";
 import type { Area } from "react-easy-crop";
 
-// Max raw upload size to allow modern smartphone camera photos to be cropped (10 MB)
+// Max source file size allowed before crop (10 MB to accommodate smartphone photos)
 const MAX_SOURCE_IMAGE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_AVATAR_TYPES = new Set([
   "image/jpeg",
@@ -64,20 +54,25 @@ export function ProfileForm({
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Form states
   const [fullName, setFullName] = useState(initialFullName);
   const [phone, setPhone] = useState(initialPhone);
   const [currentEmail] = useState(email);
   const [newEmail, setNewEmail] = useState(email);
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [avatarPath, setAvatarPath] = useState(initialAvatarPath);
 
-  // States
+  // Action status states
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [emailMessage, setEmailMessage] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  // Account deletion states
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -85,7 +80,6 @@ export function ProfileForm({
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [pendingCropSrc, setPendingCropSrc] = useState<string | null>(null);
 
-  // Clean up object URL when component unmounts or crop modal closes
   useEffect(() => {
     return () => {
       if (pendingCropSrc) {
@@ -141,7 +135,6 @@ export function ProfileForm({
       return;
     }
 
-    // Clean up previous pending object URL if any
     if (pendingCropSrc) {
       URL.revokeObjectURL(pendingCropSrc);
     }
@@ -167,10 +160,8 @@ export function ProfileForm({
     setError(null);
 
     try {
-      // 1. Crop to 1:1 square and resize to 512x512
       const croppedBlob = await getCroppedImg(pendingCropSrc, pixelCrop, 512);
 
-      // 2. Upload cropped blob to Supabase Storage
       const supabase = createClient();
       const path = `${userId}/${crypto.randomUUID()}.jpg`;
 
@@ -182,14 +173,10 @@ export function ProfileForm({
           upsert: false,
         });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // 3. Get public URL
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
 
-      // 4. Update profile in database
       const result = await updateProfileAction({
         fullName,
         phone,
@@ -198,12 +185,10 @@ export function ProfileForm({
       });
 
       if (!result.success) {
-        // Roll back uploaded file
         await supabase.storage.from("avatars").remove([path]);
         throw new Error(result.error ?? "Unable to save profile image.");
       }
 
-      // 5. Clean up old avatar file from storage if one existed
       if (avatarPath && avatarPath !== path) {
         await supabase.storage.from("avatars").remove([avatarPath]);
       }
@@ -227,40 +212,34 @@ export function ProfileForm({
 
   const requestEmailChange = async (event: React.FormEvent) => {
     event.preventDefault();
-    setMessage(null);
-    setError(null);
+    setEmailMessage(null);
+    setEmailError(null);
     const nextEmail = newEmail.trim().toLowerCase();
 
     if (!nextEmail || nextEmail === currentEmail.toLowerCase()) {
-      setMessage("Your email address is already up to date.");
+      setEmailMessage("Your email address is already up to date.");
       return;
     }
 
     setEmailLoading(true);
     try {
       const supabase = createClient();
-      const { error: emailError } = await supabase.auth.updateUser({
+      const { error: reqError } = await supabase.auth.updateUser({
         email: nextEmail,
       });
-      if (emailError) throw emailError;
-      setMessage(
+      if (reqError) throw reqError;
+      setEmailMessage(
         "Confirmation links have been sent. Your new email will take effect after confirmation."
       );
-    } catch (emailError) {
-      setError(
-        emailError instanceof Error
-          ? emailError.message
+    } catch (reqError) {
+      setEmailError(
+        reqError instanceof Error
+          ? reqError.message
           : "Unable to start the email change."
       );
     } finally {
       setEmailLoading(false);
     }
-  };
-
-  const copyAccountId = async () => {
-    await navigator.clipboard.writeText(userId);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
   };
 
   const deleteAccount = async () => {
@@ -279,112 +258,128 @@ export function ProfileForm({
 
   return (
     <>
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal information</CardTitle>
-              <CardDescription>
-                Keep the identity used across Easy Manager up to date.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={saveProfile} className="space-y-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted text-2xl font-semibold">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt="Profile avatar"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      initials
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingAvatar}
-                      className="absolute inset-x-0 bottom-0 flex h-9 items-center justify-center bg-black/55 text-white transition hover:bg-black/70 disabled:opacity-60"
-                      aria-label="Change profile image"
-                    >
-                      {uploadingAvatar ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Camera className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                  <div>
-                    <h2 className="font-semibold">Profile image</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      JPG, PNG, or WebP. Cropped to a 1:1 square.
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-3"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingAvatar}
-                    >
-                      {uploadingAvatar ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        "Change image"
-                      )}
-                    </Button>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      className="hidden"
-                      onChange={onSelectFile}
-                    />
-                  </div>
-                </div>
+      <div className="space-y-10">
+        {/* SECTION 1: Personal Information */}
+        <section className="space-y-6">
+          <div className="border-b border-border/60 pb-3">
+            <h2 className="text-base font-semibold text-foreground">
+              Personal Information
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Update your photo, name, and primary contact number.
+            </p>
+          </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="full-name">Full name</Label>
-                  <Input
-                    id="full-name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Your name"
-                    maxLength={100}
+          <form onSubmit={saveProfile} className="space-y-6">
+            {/* Avatar block */}
+            <div className="flex items-center gap-5">
+              <div className="relative group flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-xl font-semibold text-foreground shadow-sm">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Profile avatar"
+                    className="h-full w-full object-cover"
                   />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="phone">Phone number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 98765 43210"
-                    maxLength={30}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Optional contact number for your account.
-                  </p>
-                </div>
-
-                {message && (
-                  <p className="flex items-center gap-2 text-sm text-emerald-600">
-                    <Check className="h-4 w-4" />
-                    {message}
-                  </p>
+                ) : (
+                  <span>{initials}</span>
                 )}
-                {error && <p className="text-sm text-destructive">{error}</p>}
-
-                <Button
-                  type="submit"
-                  disabled={saving || uploadingAvatar}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute inset-0 flex items-center justify-center bg-black/45 text-white opacity-0 transition-opacity group-hover:opacity-100 disabled:opacity-50"
+                  aria-label="Change profile image"
                 >
+                  {uploadingAvatar ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Camera className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium text-foreground">Profile image</p>
+                <p className="text-xs text-muted-foreground">
+                  JPG, PNG or WebP · Square image (cropped to 1:1)
+                </p>
+                <div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="h-8 text-xs font-medium"
+                  >
+                    {uploadingAvatar ? (
+                      <>
+                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      "Change image"
+                    )}
+                  </Button>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={onSelectFile}
+                />
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="full-name" className="text-sm font-medium">
+                  Full name
+                </Label>
+                <Input
+                  id="full-name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your name"
+                  maxLength={100}
+                  className="max-w-md"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="phone" className="text-sm font-medium">
+                  Phone number
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  maxLength={30}
+                  className="max-w-md"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Contact number for your account.
+                </p>
+              </div>
+            </div>
+
+            {/* Inline message / Error / Save */}
+            <div className="flex flex-col gap-3 pt-1">
+              {message && (
+                <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-500">
+                  <Check className="h-4 w-4" />
+                  {message}
+                </p>
+              )}
+              {error && (
+                <p className="text-sm font-medium text-destructive">{error}</p>
+              )}
+              <div>
+                <Button type="submit" disabled={saving || uploadingAvatar}>
                   {saving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -394,132 +389,168 @@ export function ProfileForm({
                     "Save profile"
                   )}
                 </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </div>
+            </div>
+          </form>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Email address</CardTitle>
-              <CardDescription>
-                Your email is managed by Supabase Auth. Changing it requires
-                email confirmation.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={requestEmailChange} className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="current-email">Current email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="current-email"
-                      value={currentEmail}
-                      disabled
-                      className="pl-9"
-                    />
+        {/* SECTION 2: Security */}
+        <section className="space-y-6">
+          <div className="border-b border-border/60 pb-3">
+            <h2 className="text-base font-semibold text-foreground">Security</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Manage the email, phone number and password associated with your account.
+            </p>
+          </div>
+
+          <div className="divide-y divide-border/60">
+            {/* Email Row */}
+            <div className="py-4 first:pt-0">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Email</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-sm text-muted-foreground">{currentEmail}</span>
+                    {!emailConfirmed && (
+                      <span className="text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800">
+                        Unconfirmed
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="new-email">New email address</Label>
-                  <Input
-                    id="new-email"
-                    type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    required
-                  />
-                </div>
-                {!emailConfirmed && (
-                  <p className="text-xs text-amber-700 dark:text-amber-300">
-                    Your current email is not confirmed yet.
-                  </p>
-                )}
-                <Button
-                  type="submit"
-                  variant="outline"
-                  disabled={emailLoading}
-                >
-                  {emailLoading ? "Sending..." : "Change email"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account</CardTitle>
-              <CardDescription>
-                Useful account details for support and security.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Account ID
-                </p>
-                <div className="mt-2 flex items-center gap-2">
-                  <code className="min-w-0 flex-1 truncate rounded bg-muted px-2 py-1.5 text-xs">
-                    {userId}
-                  </code>
+                <div>
                   <Button
                     type="button"
                     variant="outline"
-                    size="icon"
-                    aria-label="Copy account ID"
-                    onClick={() => void copyAccountId()}
+                    size="sm"
+                    onClick={() => {
+                      setShowEmailForm((prev) => !prev);
+                      setEmailMessage(null);
+                      setEmailError(null);
+                    }}
+                    className="h-8 text-xs font-medium"
                   >
-                    {copied ? <Check /> : <Copy />}
+                    {showEmailForm ? "Cancel" : "Change email"}
                   </Button>
                 </div>
               </div>
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Phone
-                </p>
-                <p className="mt-1 flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  {phone || "Not added"}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Security
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Manage your password from the profile menu.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card className="border-destructive/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive">
-                <ShieldAlert className="h-5 w-5" />
-                Danger zone
-              </CardTitle>
-              <CardDescription>
-                Permanently delete your Easy Manager account and its business
-                data.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                type="button"
-                variant="destructive"
-                className="w-full"
-                onClick={() => setDeleteOpen(true)}
-              >
-                <Trash2 />
-                Delete account
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+              {/* Collapsible email change form */}
+              {showEmailForm && (
+                <form
+                  onSubmit={requestEmailChange}
+                  className="mt-4 pt-3 border-t border-border/40 space-y-3 max-w-md"
+                >
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="new-email"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      New email address
+                    </Label>
+                    <Input
+                      id="new-email"
+                      type="email"
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      required
+                      className="h-9"
+                    />
+                  </div>
+                  {emailMessage && (
+                    <p className="text-xs font-medium text-emerald-600 dark:text-emerald-500">
+                      {emailMessage}
+                    </p>
+                  )}
+                  {emailError && (
+                    <p className="text-xs font-medium text-destructive">{emailError}</p>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={emailLoading}
+                      className="h-8 text-xs"
+                    >
+                      {emailLoading ? (
+                        <>
+                          <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Send confirmation"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Phone Row */}
+            <div className="py-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Phone</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    {phone ? phone : "Not added"}
+                  </p>
+                </div>
+                <div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const el = document.getElementById("phone");
+                      el?.focus();
+                      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    className="h-8 text-xs font-medium"
+                  >
+                    Change phone
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Password Row */}
+            <div className="py-4 last:pb-0">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Password</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Manage and change your sign-in password.
+                  </p>
+                </div>
+                <div>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-xs font-medium"
+                  >
+                    <Link href="/auth/update-password">Change password</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 3: Delete Account (Subtle, unobtrusive at the very bottom) */}
+        <section className="pt-6 border-t border-border/60">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setDeleteOpen(true)}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-destructive focus-visible:outline-none focus-visible:underline"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span>Delete account</span>
+            </button>
+          </div>
+        </section>
       </div>
 
       {/* Image Crop Dialog */}
@@ -537,9 +568,8 @@ export function ProfileForm({
           <DialogHeader>
             <DialogTitle>Delete your account?</DialogTitle>
             <DialogDescription>
-              This permanently removes your Auth account, profile, businesses,
-              readings, fuel rates, expenses, and stored profile image. This
-              action cannot be undone.
+              This permanently removes your account, profile, businesses, readings,
+              fuel rates, expenses, and stored profile image. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -559,14 +589,11 @@ export function ProfileForm({
             >
               {deleting ? (
                 <>
-                  <Loader2 className="animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Deleting...
                 </>
               ) : (
-                <>
-                  <Trash2 />
-                  Delete permanently
-                </>
+                "Delete permanently"
               )}
             </Button>
           </DialogFooter>
