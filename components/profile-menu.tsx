@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { CircleUserRound, LogOut, UserRound } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createClient } from "@/lib/supabase/client";
 
 function getInitials(fullName: string | null, email: string) {
   const source = fullName?.trim() || email.split("@")[0] || "U";
@@ -27,14 +25,14 @@ export function ProfileMenu({
   fullName: string | null;
   avatarUrl: string | null;
 }) {
-  const router = useRouter();
   const initials = getInitials(fullName, email);
 
   const logout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/auth/login");
-    router.refresh();
+    await fetch("/auth/logout", {
+      method: "POST",
+      credentials: "same-origin",
+    });
+    window.location.assign("/");
   };
 
   return (
