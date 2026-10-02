@@ -8,13 +8,12 @@ import { getAuthUser } from "@/lib/supabase/auth";
 const profileSchema = z.object({
   fullName: z.string().trim().max(100),
   phone: z.string().trim().max(30).optional().or(z.literal("")),
-  bio: z.string().trim().max(280).optional().or(z.literal("")),
   avatarUrl: z.string().url().nullable().optional(),
   avatarPath: z.string().max(300).nullable().optional(),
 });
 
 export async function updateProfileAction(input: {
-  fullName: string; phone: string; bio: string;
+  fullName: string; phone: string;
   avatarUrl?: string | null; avatarPath?: string | null;
 }) {
   const parsed = profileSchema.safeParse(input);
@@ -26,7 +25,6 @@ export async function updateProfileAction(input: {
   const { error } = await supabase.from("profiles").update({
     full_name: parsed.data.fullName || null,
     phone: parsed.data.phone || null,
-    bio: parsed.data.bio || null,
     ...(parsed.data.avatarUrl !== undefined ? { avatar_url: parsed.data.avatarUrl } : {}),
     ...(parsed.data.avatarPath !== undefined ? { avatar_path: parsed.data.avatarPath } : {}),
   }).eq("id", user.id);
