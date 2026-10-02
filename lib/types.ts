@@ -1,5 +1,5 @@
 export interface Business { id: string; owner_id: string; name: string; type: string; created_at: string; }
-export interface UserProfile { id: string; full_name: string | null; avatar_url: string | null; avatar_path: string | null; phone: string | null; bio: string | null; created_at: string; updated_at: string; }
+export interface UserProfile { id: string; full_name: string | null; avatar_url: string | null; avatar_path: string | null; phone: string | null; created_at: string; updated_at: string; }
 export type FuelType = "MS" | "HSD";
 export interface FuelRate { id: string; business_id: string; fuel_type: FuelType; effective_date: string; rate: number; margin: number; created_at: string; }
 export interface DailyMeterReading { id: string; business_id: string; fuel_type: FuelType; reading_date: string; opening_reading: number; closing_reading: number; created_at: string; updated_at: string; }
