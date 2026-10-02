@@ -8,21 +8,19 @@ import { updateProfileAction, deleteAccountAction } from "@/app/actions/profile"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
 const ALLOWED_AVATAR_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-export function ProfileForm({ userId, email, emailConfirmed, fullName: initialFullName, phone: initialPhone, bio: initialBio, avatarUrl: initialAvatarUrl, avatarPath: initialAvatarPath }: {
-  userId: string; email: string; emailConfirmed: boolean; fullName: string; phone: string; bio: string; avatarUrl: string | null; avatarPath: string | null;
+export function ProfileForm({ userId, email, emailConfirmed, fullName: initialFullName, phone: initialPhone, avatarUrl: initialAvatarUrl, avatarPath: initialAvatarPath }: {
+  userId: string; email: string; emailConfirmed: boolean; fullName: string; phone: string; avatarUrl: string | null; avatarPath: string | null;
 }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fullName, setFullName] = useState(initialFullName);
   const [phone, setPhone] = useState(initialPhone);
-  const [bio, setBio] = useState(initialBio);
   const [currentEmail] = useState(email);
   const [newEmail, setNewEmail] = useState(email);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
@@ -40,7 +38,7 @@ export function ProfileForm({ userId, email, emailConfirmed, fullName: initialFu
 
   const saveProfile = async (event: React.FormEvent) => {
     event.preventDefault(); setSaving(true); setMessage(null); setError(null);
-    const result = await updateProfileAction({ fullName, phone, bio, avatarUrl, avatarPath });
+    const result = await updateProfileAction({ fullName, phone, avatarUrl, avatarPath });
     if (!result.success) setError(result.error ?? "Unable to save your profile.");
     else { setMessage("Profile saved."); router.refresh(); }
     setSaving(false);
@@ -58,7 +56,7 @@ export function ProfileForm({ userId, email, emailConfirmed, fullName: initialFu
       const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { cacheControl: "3600", contentType: file.type, upsert: false });
       if (uploadError) throw uploadError;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-      const result = await updateProfileAction({ fullName, phone, bio, avatarUrl: data.publicUrl, avatarPath: path });
+      const result = await updateProfileAction({ fullName, phone, avatarUrl: data.publicUrl, avatarPath: path });
       if (!result.success) { await supabase.storage.from("avatars").remove([path]); throw new Error(result.error ?? "Unable to save the profile image."); }
       if (avatarPath && avatarPath !== path) await supabase.storage.from("avatars").remove([avatarPath]);
       setAvatarUrl(data.publicUrl); setAvatarPath(path); setMessage("Profile image updated."); router.refresh();
@@ -112,7 +110,6 @@ export function ProfileForm({ userId, email, emailConfirmed, fullName: initialFu
                 </div>
                 <div className="grid gap-2"><Label htmlFor="full-name">Full name</Label><Input id="full-name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your name" maxLength={100} /></div>
                 <div className="grid gap-2"><Label htmlFor="phone">Phone number</Label><Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" maxLength={30} /><p className="text-xs text-muted-foreground">Optional contact number for your account.</p></div>
-                <div className="grid gap-2"><Label htmlFor="bio">Profile note (optional)</Label><Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Optional note about yourself" maxLength={280} /><p className="text-xs text-muted-foreground">Private account information; not shown in the business workspace.</p></div>
                 {message && <p className="flex items-center gap-2 text-sm text-emerald-600"><Check className="h-4 w-4" />{message}</p>}
                 {error && <p className="text-sm text-destructive">{error}</p>}
                 <Button type="submit" disabled={saving || uploadingAvatar}>{saving ? "Saving..." : "Save profile"}</Button>
